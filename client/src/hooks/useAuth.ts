@@ -1,2 +1,7 @@
-// Auth hook - will be implemented in Phase 1
-export {};
+import { useAuthContext } from '../features/auth/AuthContext';
+
+export const useAuth = () => {
+  return useAuthContext();
+};
+
+export default useAuth;

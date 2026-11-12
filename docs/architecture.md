@@ -146,3 +146,4 @@ flowchart TD
 - **Data Isolation**: Resource ownership middleware guarantees vendor ID matches target entity.
 - **Webhooks**: Razorpay signatures verified against the raw request payload before body parsing.
 - **S3 Uploads**: Direct uploads via presigned URLs with strict Content-Type and 5MB size limits; credentials never touch client.
+

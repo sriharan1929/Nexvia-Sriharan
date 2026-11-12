@@ -362,3 +362,4 @@ Verified buyer feedback linked to purchased products.
 | **Shopping Cart** | `cart:v1:<customerId>` | JSON `{ items: [{ productId, quantity }], updatedAt }` | 7 Days (`604800s`) |
 | **Token Blacklist** | `bl:<jti>` | String `"revoked"` | Matching JWT expiration |
 | **Rate Limiter** | `rl:auth:<ip>` | String (Integer count) | 60 Seconds |
+

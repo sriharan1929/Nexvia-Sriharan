@@ -6,15 +6,19 @@ import cookieParser from 'cookie-parser';
 import { env } from './config';
 import { errorHandler } from './middleware';
 import healthRouter from './routes/health.routes';
+import authRouter from './routes/auth.routes';
+import userRouter from './routes/user.routes';
 
 const app = express();
 
 // Security & parsing middleware
 app.use(helmet());
-app.use(cors({
-  origin: env.CLIENT_URL,
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: env.CLIENT_URL,
+    credentials: true,
+  })
+);
 app.use(morgan('dev'));
 app.use(cookieParser());
 
@@ -27,6 +31,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/v1', healthRouter);
+app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/users', userRouter);
 
 // Error handler (must be last)
 app.use(errorHandler);

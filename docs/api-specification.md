@@ -133,3 +133,4 @@
 |---|---|---|---|
 | `GET` | `/admin/analytics/overview` | Admin | Platform GMV, total commissions, order counts, active vendors |
 | `GET` | `/vendor/analytics` | Vendor (Approved) | Vendor net revenue, items sold, pending fulfillments |
+

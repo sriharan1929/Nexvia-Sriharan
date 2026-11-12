@@ -82,3 +82,4 @@ A customer purchases items from two separate vendors in a single checkout sessio
    - Vendor A Net Transfer: $90000 - 9000 = 81000$ paise (₹810)
    - Vendor B Net Transfer: $45000 - 4500 = 40500$ paise (₹405)
    - Customer Paid: ₹1,350 ($810 + 405 + 135$)
+
