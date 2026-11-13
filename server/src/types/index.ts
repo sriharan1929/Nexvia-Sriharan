@@ -6,6 +6,7 @@ export interface AuthenticatedRequest extends Request {
     email: string;
     roles: string[];
   };
+  vendor?: any;
 }
 
 export enum UserRole {

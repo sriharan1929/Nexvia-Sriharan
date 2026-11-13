@@ -8,6 +8,10 @@ import { errorHandler } from './middleware';
 import healthRouter from './routes/health.routes';
 import authRouter from './routes/auth.routes';
 import userRouter from './routes/user.routes';
+import vendorRouter from './routes/vendor.routes';
+import adminRouter from './routes/admin.routes';
+import catalogRouter from './routes/catalog.routes';
+import uploadRouter from './routes/upload.routes';
 
 const app = express();
 
@@ -33,6 +37,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/v1', healthRouter);
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/vendor', vendorRouter);
+app.use('/api/v1/admin', adminRouter);
+app.use('/api/v1', catalogRouter); // covers /api/v1/products and /api/v1/categories
+app.use('/api/v1/uploads', uploadRouter);
 
 // Error handler (must be last)
 app.use(errorHandler);

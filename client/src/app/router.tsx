@@ -3,6 +3,11 @@ import Navbar from '../components/Navbar';
 import ProtectedRoute from '../components/ProtectedRoute';
 import LoginPage from '../pages/LoginPage';
 import RegisterPage from '../pages/RegisterPage';
+import VendorApplyPage from '../pages/VendorApplyPage';
+import VendorDashboardPage from '../pages/VendorDashboardPage';
+import AdminVendorsPage from '../pages/AdminVendorsPage';
+import CatalogPage from '../pages/CatalogPage';
+import ProductDetailPage from '../pages/ProductDetailPage';
 import useAuth from '../hooks/useAuth';
 import Button from '../components/ui/Button';
 
@@ -82,40 +87,6 @@ function HomePage() {
   );
 }
 
-// Vendor Dashboard Shell (Phase 2 preview)
-function VendorDashboard() {
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">Vendor Portal</h1>
-        <div className="bg-white p-6 rounded-xl border border-gray-200">
-          <p className="text-gray-600">
-            Welcome to the Seller Dashboard. Product and order management tools will be configured in Phase 2.
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Admin Console Shell (Phase 2 preview)
-function AdminDashboard() {
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">Admin Console</h1>
-        <div className="bg-white p-6 rounded-xl border border-gray-200">
-          <p className="text-gray-600">
-            Welcome to Marketplace Administration. Vendor approval and catalog moderation tools will be configured in Phase 2.
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function NotFoundPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
@@ -133,27 +104,37 @@ function NotFoundPage() {
 export default function AppRouter() {
   return (
     <Routes>
-      {/* Public */}
+      {/* Public Pages */}
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/products" element={<CatalogPage />} />
+      <Route path="/products/:slug" element={<ProductDetailPage />} />
 
-      {/* Protected Vendor Portal */}
+      {/* Vendor Onboarding & Portal */}
+      <Route
+        path="/vendor/apply"
+        element={
+          <ProtectedRoute>
+            <VendorApplyPage />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/vendor/*"
         element={
           <ProtectedRoute allowedRoles={['VENDOR', 'ADMIN']}>
-            <VendorDashboard />
+            <VendorDashboardPage />
           </ProtectedRoute>
         }
       />
 
-      {/* Protected Admin Console */}
+      {/* Admin Moderation Console */}
       <Route
         path="/admin/*"
         element={
           <ProtectedRoute allowedRoles={['ADMIN']}>
-            <AdminDashboard />
+            <AdminVendorsPage />
           </ProtectedRoute>
         }
       />
