@@ -165,3 +165,4 @@ export const updateCategory = async (
     next(error);
   }
 };
+

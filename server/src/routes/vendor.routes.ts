@@ -52,3 +52,4 @@ router.patch(
 router.delete('/products/:id', authenticate, ensureApprovedVendor, deleteVendorProduct);
 
 export default router;
+

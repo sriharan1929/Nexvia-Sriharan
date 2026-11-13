@@ -30,3 +30,4 @@ router.post('/categories', validate(createCategorySchema), createCategory);
 router.patch('/categories/:id', validate(updateCategorySchema), updateCategory);
 
 export default router;
+

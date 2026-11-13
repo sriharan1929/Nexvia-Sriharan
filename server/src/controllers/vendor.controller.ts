@@ -4,6 +4,7 @@ import VendorProfile from '../models/VendorProfile';
 import Product from '../models/Product';
 import User from '../models/User';
 import { AppError } from '../middleware/errorHandler';
+import { indexProduct, deleteProductFromIndex } from '../services/search.service';
 import slugify from 'slugify';
 
 export const applyVendor = async (
@@ -191,6 +192,13 @@ export const createVendorProduct = async (
       tags,
     });
 
+    // Synchronize to Elasticsearch index if active
+    if (product.status === ProductStatus.ACTIVE) {
+      indexProduct(product).catch((err) =>
+        console.warn('[Elasticsearch] Index error on create:', err.message)
+      );
+    }
+
     res.status(201).json({
       success: true,
       message: 'Product created successfully',
@@ -239,6 +247,17 @@ export const updateVendorProduct = async (
 
     await product.save();
 
+    // Synchronize to Elasticsearch index
+    if (product.status === ProductStatus.ACTIVE) {
+      indexProduct(product).catch((err) =>
+        console.warn('[Elasticsearch] Index error on update:', err.message)
+      );
+    } else {
+      deleteProductFromIndex(product._id.toString()).catch((err) =>
+        console.warn('[Elasticsearch] Delete error on update:', err.message)
+      );
+    }
+
     res.status(200).json({
       success: true,
       message: 'Product updated successfully',
@@ -271,6 +290,11 @@ export const deleteVendorProduct = async (
     product.status = ProductStatus.ARCHIVED;
     await product.save();
 
+    // Remove from Elasticsearch index
+    deleteProductFromIndex(product._id.toString()).catch((err) =>
+      console.warn('[Elasticsearch] Delete error on archive:', err.message)
+    );
+
     res.status(200).json({
       success: true,
       message: 'Product archived successfully',
@@ -279,3 +303,4 @@ export const deleteVendorProduct = async (
     next(error);
   }
 };
+
