@@ -10,7 +10,7 @@ import useCart from '../hooks/useCart';
 import api from '../lib/api';
 import { formatPrice } from '../lib/utils';
 import toast from 'react-hot-toast';
-import { Store, ShieldCheck, ArrowLeft, CreditCard } from 'lucide-react';
+import { Store, ShieldCheck, ArrowLeft, CreditCard, Sparkles, CheckCircle2 } from 'lucide-react';
 
 const checkoutAddressSchema = z.object({
   name: z.string().min(2, 'Full name is required').max(100),
@@ -29,10 +29,26 @@ const checkoutAddressSchema = z.object({
 
 type CheckoutAddressFormData = z.infer<typeof checkoutAddressSchema>;
 
+// Dynamically load Razorpay SDK script
+const loadRazorpayScript = (): Promise<boolean> => {
+  return new Promise((resolve) => {
+    if ((window as any).Razorpay) {
+      resolve(true);
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
+
 export default function CheckoutPage() {
   const { items, subtotalPaise, itemCount, vendorCount, clearCart } = useCart();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'simulate'>('simulate');
 
   const {
     register,
@@ -75,17 +91,77 @@ export default function CheckoutPage() {
 
     setIsSubmitting(true);
     try {
-      const res = await api.post('/checkout/session', {
+      // 1. Create checkout session & parent order
+      const sessionRes = await api.post('/checkout/session', {
         address: addressData,
       });
 
-      const { order } = res.data.data;
-      toast.success(`Order #${order.orderNumber} placed successfully!`);
-      await clearCart();
-      navigate(`/orders/${order._id}`);
+      const { order, razorpayOrderId, keyId, amountPaise } = sessionRes.data.data;
+
+      // 2. Handle Payment
+      if (paymentMethod === 'simulate' || !keyId || keyId.includes('mock')) {
+        // Fast instant simulation mode
+        await api.post('/payments/simulate', { orderId: order._id });
+        toast.success(`Payment captured! Order #${order.orderNumber} placed successfully.`);
+        await clearCart();
+        navigate(`/orders/${order._id}`);
+        return;
+      }
+
+      // Live Razorpay Checkout Modal
+      const loaded = await loadRazorpayScript();
+      if (!loaded) {
+        toast.error('Unable to load Razorpay payment SDK. Falling back to test checkout.');
+        await api.post('/payments/simulate', { orderId: order._id });
+        toast.success(`Order #${order.orderNumber} placed successfully!`);
+        await clearCart();
+        navigate(`/orders/${order._id}`);
+        return;
+      }
+
+      const options = {
+        key: keyId,
+        amount: amountPaise,
+        currency: 'INR',
+        name: 'BadaVyapar Marketplace',
+        description: `Order #${order.orderNumber}`,
+        order_id: razorpayOrderId.startsWith('order_mock') ? undefined : razorpayOrderId,
+        handler: async (response: any) => {
+          try {
+            await api.post('/payments/razorpay/verify', {
+              orderId: order._id,
+              razorpayOrderId: response.razorpay_order_id || razorpayOrderId,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpaySignature: response.razorpay_signature,
+            });
+            toast.success(`Payment verified! Order #${order.orderNumber} confirmed.`);
+            await clearCart();
+            navigate(`/orders/${order._id}`);
+          } catch (err: any) {
+            toast.error(err.response?.data?.message || 'Payment verification failed');
+            navigate(`/orders/${order._id}`);
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            toast('Payment incomplete. You can pay from Order Details.', { icon: 'ℹ️' });
+            navigate(`/orders/${order._id}`);
+          },
+        },
+        prefill: {
+          name: addressData.name,
+          contact: addressData.phone,
+        },
+        theme: {
+          color: '#d97706',
+        },
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.open();
     } catch (error: any) {
       toast.error(
-        error.response?.data?.message || 'Failed to place order. Please check stock.'
+        error.response?.data?.message || 'Failed to complete checkout. Please review items.'
       );
     } finally {
       setIsSubmitting(false);
@@ -99,7 +175,7 @@ export default function CheckoutPage() {
         <div className="flex-1 flex flex-col items-center justify-center p-4">
           <p className="text-gray-500 mb-4">Your cart is empty.</p>
           <Link to="/products">
-            <Button variant="primary">Browse Marketplace</Button>
+            <Button variant="primary">Explore Marketplace</Button>
           </Link>
         </div>
       </div>
@@ -111,35 +187,37 @@ export default function CheckoutPage() {
       <Navbar />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-6">
-          <Link
-            to="/cart"
-            className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-amber-600 transition"
-          >
-            <ArrowLeft className="w-4 h-4 mr-1.5" /> Back to Cart
-          </Link>
-          <h1 className="text-3xl font-black text-gray-900 tracking-tight mt-2">
-            Multi-Vendor Checkout
-          </h1>
-          <p className="text-sm text-gray-500">
-            One single payment. Independent fulfillment and tracking from {vendorCount} {vendorCount === 1 ? 'seller' : 'sellers'}.
-          </p>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <Link
+              to="/cart"
+              className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-amber-600 transition"
+            >
+              <ArrowLeft className="w-4 h-4 mr-1.5" /> Back to Cart
+            </Link>
+            <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight mt-1">
+              Complete Your Checkout
+            </h1>
+            <p className="text-xs text-gray-500 mt-0.5">
+              Multi-vendor order with {vendorCount} separate seller dispatch{vendorCount > 1 ? 'es' : ''}
+            </p>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left: Shipping Address Form & Items Review */}
+            {/* Left 2 Cols: Shipping Details & Vendor Shipments */}
             <div className="lg:col-span-2 space-y-6">
               {/* Shipping Address */}
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h2 className="text-lg font-bold text-gray-900 mb-4">
-                  1. Shipping & Delivery Address
+                  1. Shipping & Contact Address
                 </h2>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="sm:col-span-2">
                     <Input
-                      label="Recipient Full Name *"
+                      label="Full Recipient Name *"
                       error={errors.name?.message}
                       {...register('name')}
                     />
@@ -225,6 +303,63 @@ export default function CheckoutPage() {
                   ))}
                 </div>
               </div>
+
+              {/* Payment Method Selector */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h2 className="text-lg font-bold text-gray-900 mb-4">
+                  3. Select Payment Mode
+                </h2>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div
+                    onClick={() => setPaymentMethod('simulate')}
+                    className={`cursor-pointer rounded-xl border-2 p-4 transition flex flex-col justify-between ${
+                      paymentMethod === 'simulate'
+                        ? 'border-amber-500 bg-amber-50/30 ring-1 ring-amber-500'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center space-x-2">
+                        <Sparkles className="w-5 h-5 text-amber-600" />
+                        <span className="font-bold text-gray-900 text-sm">
+                          Instant Demo Payment
+                        </span>
+                      </div>
+                      {paymentMethod === 'simulate' && (
+                        <CheckCircle2 className="w-5 h-5 text-amber-600" />
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-500">
+                      Simulates successful payment capture & Route transfers instantly without card/UPI prompts.
+                    </p>
+                  </div>
+
+                  <div
+                    onClick={() => setPaymentMethod('razorpay')}
+                    className={`cursor-pointer rounded-xl border-2 p-4 transition flex flex-col justify-between ${
+                      paymentMethod === 'razorpay'
+                        ? 'border-amber-500 bg-amber-50/30 ring-1 ring-amber-500'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center space-x-2">
+                        <CreditCard className="w-5 h-5 text-indigo-600" />
+                        <span className="font-bold text-gray-900 text-sm">
+                          Razorpay Route Gateway
+                        </span>
+                      </div>
+                      {paymentMethod === 'razorpay' && (
+                        <CheckCircle2 className="w-5 h-5 text-amber-600" />
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-500">
+                      Official Razorpay modal supporting UPI, Cards, NetBanking, and automated vendor transfers.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Right: Order Summary & Place Order */}
@@ -257,7 +392,10 @@ export default function CheckoutPage() {
                   className="w-full flex items-center justify-center space-x-2 py-3 shadow-md"
                 >
                   <CreditCard className="w-5 h-5 mr-1.5" />
-                  <span>Place Order & Pay {formatPrice(subtotalPaise)}</span>
+                  <span>
+                    {paymentMethod === 'simulate' ? 'Simulate & Confirm Order' : 'Pay via Razorpay'}{' '}
+                    ({formatPrice(subtotalPaise)})
+                  </span>
                 </Button>
 
                 <div className="mt-6 flex items-center justify-center space-x-2 text-xs text-gray-400">

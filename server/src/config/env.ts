@@ -29,9 +29,9 @@ const env = {
   AWS_S3_BUCKET: process.env.AWS_S3_BUCKET || 'badavyapar-uploads',
 
   // Razorpay
-  RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID || '',
-  RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET || '',
-  RAZORPAY_WEBHOOK_SECRET: process.env.RAZORPAY_WEBHOOK_SECRET || '',
+  RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID || 'rzp_test_mock_badavyapar',
+  RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET || 'dev-razorpay-key-secret-12345',
+  RAZORPAY_WEBHOOK_SECRET: process.env.RAZORPAY_WEBHOOK_SECRET || 'dev-razorpay-webhook-secret-12345',
 
   // Client
   CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:5173',

@@ -13,6 +13,7 @@ export interface IVendorProfile extends Document {
   approvalStatus: ApprovalStatus;
   rejectionReason?: string;
   razorpayLinkedAccountId?: string;
+  paymentProviderAccountId?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -68,6 +69,9 @@ const vendorProfileSchema = new Schema<IVendorProfile>(
       type: String,
     },
     razorpayLinkedAccountId: {
+      type: String,
+    },
+    paymentProviderAccountId: {
       type: String,
     },
   },

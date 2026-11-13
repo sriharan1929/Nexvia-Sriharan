@@ -4,6 +4,7 @@ import Order, { IAddressSnapshot } from '../models/Order';
 import SellerOrder from '../models/SellerOrder';
 import InventoryReservation from '../models/InventoryReservation';
 import Product from '../models/Product';
+import { createGatewayOrder } from './payment.service';
 import { env } from '../config';
 import { FulfillmentStatus, PaymentStatus, TransferStatus } from '../types';
 import { AppError } from '../middleware/errorHandler';
@@ -160,8 +161,16 @@ export const createCheckoutSession = async (
       taxPaise,
       totalPaise,
       paymentStatus: PaymentStatus.PENDING,
-      razorpayOrderId: `order_${Date.now().toString(36)}`,
     });
+
+    // Create payment gateway order and Payment document
+    const gatewayOrder = await createGatewayOrder(
+      parentOrder._id.toString(),
+      totalPaise,
+      parentOrder.orderNumber
+    );
+    parentOrder.razorpayOrderId = gatewayOrder.razorpayOrderId;
+    await parentOrder.save();
 
     // 3. Create Inventory Reservation records (expires in 15 minutes)
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
@@ -230,6 +239,7 @@ export const createCheckoutSession = async (
       sellerOrders: createdSellerOrders,
       razorpayOrderId: parentOrder.razorpayOrderId,
       amountPaise: parentOrder.totalPaise,
+      keyId: gatewayOrder.keyId,
     };
   } catch (error) {
     // If order creation failed, rollback inventory

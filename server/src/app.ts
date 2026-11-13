@@ -15,6 +15,8 @@ import uploadRouter from './routes/upload.routes';
 import cartRouter from './routes/cart.routes';
 import checkoutRouter from './routes/checkout.routes';
 import orderRouter from './routes/order.routes';
+import paymentRouter from './routes/payment.routes';
+import webhookRouter from './routes/webhook.routes';
 
 const app = express();
 
@@ -47,6 +49,8 @@ app.use('/api/v1/uploads', uploadRouter);
 app.use('/api/v1/cart', cartRouter);
 app.use('/api/v1/checkout', checkoutRouter);
 app.use('/api/v1/orders', orderRouter);
+app.use('/api/v1/payments', paymentRouter);
+app.use('/api/v1/webhooks', webhookRouter);
 
 // Error handler (must be last)
 app.use(errorHandler);

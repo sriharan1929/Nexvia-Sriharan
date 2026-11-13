@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar';
 import Button from '../components/ui/Button';
 import api from '../lib/api';
 import { formatPrice, formatDate } from '../lib/utils';
+import toast from 'react-hot-toast';
 import {
   ArrowLeft,
   Store,
@@ -11,6 +12,7 @@ import {
   Clock,
   Truck,
   ExternalLink,
+  CreditCard,
 } from 'lucide-react';
 
 const FULFILLMENT_STEPS = ['PLACED', 'PACKED', 'SHIPPED', 'DELIVERED'];
@@ -19,24 +21,39 @@ export default function OrderDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [order, setOrder] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isPaying, setIsPaying] = useState(false);
+
+  const fetchOrderDetail = async () => {
+    try {
+      setIsLoading(true);
+      const res = await api.get(`/orders/${id}`);
+      setOrder(res.data.data.order);
+    } catch (error) {
+      console.error('Failed to load order detail:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchOrderDetail = async () => {
-      try {
-        setIsLoading(true);
-        const res = await api.get(`/orders/${id}`);
-        setOrder(res.data.data.order);
-      } catch (error) {
-        console.error('Failed to load order detail:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     if (id) {
       fetchOrderDetail();
     }
   }, [id]);
+
+  const handleSimulatePayment = async () => {
+    if (!order) return;
+    try {
+      setIsPaying(true);
+      await api.post('/payments/simulate', { orderId: order._id });
+      toast.success('Payment captured successfully!');
+      await fetchOrderDetail();
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Payment processing failed');
+    } finally {
+      setIsPaying(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -92,9 +109,19 @@ export default function OrderDetailPage() {
                 </span>
               )}
               {order.paymentStatus === 'PENDING' && (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">
-                  <Clock className="w-4 h-4 mr-1" /> Payment Pending
-                </span>
+                <div className="flex items-center space-x-2">
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">
+                    <Clock className="w-4 h-4 mr-1" /> Payment Pending
+                  </span>
+                  <Button
+                    size="sm"
+                    variant="primary"
+                    isLoading={isPaying}
+                    onClick={handleSimulatePayment}
+                  >
+                    <CreditCard className="w-3.5 h-3.5 mr-1" /> Pay Now
+                  </Button>
+                </div>
               )}
             </div>
           </div>
