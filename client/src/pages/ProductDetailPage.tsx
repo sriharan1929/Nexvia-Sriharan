@@ -3,9 +3,9 @@ import { useParams, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Button from '../components/ui/Button';
 import api from '../lib/api';
+import useCart from '../hooks/useCart';
 import { formatPrice } from '../lib/utils';
 import type { Product } from '../types';
-import toast from 'react-hot-toast';
 import { Store, ShoppingCart, ShieldCheck, Truck, ArrowLeft } from 'lucide-react';
 
 export default function ProductDetailPage() {
@@ -13,6 +13,9 @@ export default function ProductDetailPage() {
   const [product, setProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
+
+  const { addItem } = useCart();
+  const [isAdding, setIsAdding] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -32,9 +35,11 @@ export default function ProductDetailPage() {
     }
   }, [slug]);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!product) return;
-    toast.success(`Added ${quantity} × ${product.title} to your cart!`);
+    setIsAdding(true);
+    await addItem(product._id, quantity);
+    setIsAdding(false);
   };
 
   if (isLoading) {
@@ -163,6 +168,7 @@ export default function ProductDetailPage() {
                   onClick={handleAddToCart}
                   variant="primary"
                   size="lg"
+                  isLoading={isAdding}
                   className="w-full shadow-md py-3 text-base flex items-center justify-center space-x-2"
                   disabled={product.stock <= 0}
                 >

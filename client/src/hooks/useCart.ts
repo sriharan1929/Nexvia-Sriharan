@@ -1,2 +1,7 @@
-// Cart hook - will be implemented in Phase 4
-export {};
+import { useCartContext } from '../features/cart/CartContext';
+
+export const useCart = () => {
+  return useCartContext();
+};
+
+export default useCart;

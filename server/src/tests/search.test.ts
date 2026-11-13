@@ -75,3 +75,4 @@ describe('Elasticsearch Query DSL Builder', () => {
     expect(page3Query.size).toBe(15);
   });
 });
+

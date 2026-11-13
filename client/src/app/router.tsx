@@ -8,6 +8,7 @@ import VendorDashboardPage from '../pages/VendorDashboardPage';
 import AdminVendorsPage from '../pages/AdminVendorsPage';
 import CatalogPage from '../pages/CatalogPage';
 import ProductDetailPage from '../pages/ProductDetailPage';
+import CartPage from '../pages/CartPage';
 import useAuth from '../hooks/useAuth';
 import Button from '../components/ui/Button';
 
@@ -110,6 +111,7 @@ export default function AppRouter() {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/products" element={<CatalogPage />} />
       <Route path="/products/:slug" element={<ProductDetailPage />} />
+      <Route path="/cart" element={<CartPage />} />
 
       {/* Vendor Onboarding & Portal */}
       <Route

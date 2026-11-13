@@ -1,10 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
+import useCart from '../hooks/useCart';
 import { ShoppingCart, Store, Shield, LogOut } from 'lucide-react';
 import Button from './ui/Button';
 
 export default function Navbar() {
   const { user, isAuthenticated, logout, hasRole } = useAuth();
+  const { itemCount } = useCart();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -40,6 +42,11 @@ export default function Navbar() {
               title="Shopping Cart"
             >
               <ShoppingCart className="w-5 h-5" />
+              {itemCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-amber-600 text-white font-bold text-[10px] w-5 h-5 rounded-full flex items-center justify-center ring-2 ring-white">
+                  {itemCount > 99 ? '99+' : itemCount}
+                </span>
+              )}
             </Link>
 
             {isAuthenticated && user ? (
