@@ -96,3 +96,4 @@ describe('Cart Persistence & Calculations', () => {
     expect(items).toHaveLength(0);
   });
 });
+

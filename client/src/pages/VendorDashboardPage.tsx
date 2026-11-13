@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
@@ -6,7 +7,7 @@ import api from '../lib/api';
 import { formatPrice } from '../lib/utils';
 import type { VendorProfile, Product, Category } from '../types';
 import toast from 'react-hot-toast';
-import { Plus, Trash2, Edit3, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
+import { Plus, Trash2, Edit3, AlertCircle, CheckCircle2, Clock, Package } from 'lucide-react';
 
 export default function VendorDashboardPage() {
   const [vendor, setVendor] = useState<VendorProfile | null>(null);
@@ -171,9 +172,16 @@ export default function VendorDashboardPage() {
           </div>
 
           {vendor?.approvalStatus === 'APPROVED' && (
-            <Button onClick={openCreateModal} variant="primary" size="md">
-              <Plus className="w-4 h-4 mr-1.5" /> Add New Product
-            </Button>
+            <div className="flex items-center space-x-3">
+              <Link to="/vendor/orders">
+                <Button variant="secondary" size="md">
+                  <Package className="w-4 h-4 mr-1.5" /> Manage Orders
+                </Button>
+              </Link>
+              <Button onClick={openCreateModal} variant="primary" size="md">
+                <Plus className="w-4 h-4 mr-1.5" /> Add New Product
+              </Button>
+            </div>
           )}
         </div>
 

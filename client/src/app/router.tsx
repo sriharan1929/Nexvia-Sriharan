@@ -9,6 +9,10 @@ import AdminVendorsPage from '../pages/AdminVendorsPage';
 import CatalogPage from '../pages/CatalogPage';
 import ProductDetailPage from '../pages/ProductDetailPage';
 import CartPage from '../pages/CartPage';
+import CheckoutPage from '../pages/CheckoutPage';
+import OrdersPage from '../pages/OrdersPage';
+import OrderDetailPage from '../pages/OrderDetailPage';
+import VendorOrdersPage from '../pages/VendorOrdersPage';
 import useAuth from '../hooks/useAuth';
 import Button from '../components/ui/Button';
 
@@ -113,6 +117,32 @@ export default function AppRouter() {
       <Route path="/products/:slug" element={<ProductDetailPage />} />
       <Route path="/cart" element={<CartPage />} />
 
+      {/* Checkout & Customer Orders */}
+      <Route
+        path="/checkout"
+        element={
+          <ProtectedRoute>
+            <CheckoutPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/orders"
+        element={
+          <ProtectedRoute>
+            <OrdersPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/orders/:id"
+        element={
+          <ProtectedRoute>
+            <OrderDetailPage />
+          </ProtectedRoute>
+        }
+      />
+
       {/* Vendor Onboarding & Portal */}
       <Route
         path="/vendor/apply"
@@ -123,7 +153,15 @@ export default function AppRouter() {
         }
       />
       <Route
-        path="/vendor/*"
+        path="/vendor/orders"
+        element={
+          <ProtectedRoute allowedRoles={['VENDOR', 'ADMIN']}>
+            <VendorOrdersPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/vendor"
         element={
           <ProtectedRoute allowedRoles={['VENDOR', 'ADMIN']}>
             <VendorDashboardPage />

@@ -8,6 +8,10 @@ import {
   updateVendorProduct,
   deleteVendorProduct,
 } from '../controllers/vendor.controller';
+import {
+  getVendorOrdersController,
+  updateSellerOrderStatusController,
+} from '../controllers/order.controller';
 import { authenticate } from '../middleware/auth';
 import { ensureApprovedVendor } from '../middleware/ensureApprovedVendor';
 import { validate } from '../middleware/validate';
@@ -19,6 +23,7 @@ import {
   createProductSchema,
   updateProductSchema,
 } from '../validators/product.validator';
+import { updateFulfillmentStatusSchema } from '../validators/order.validator';
 
 const router = Router();
 
@@ -51,5 +56,14 @@ router.patch(
 );
 router.delete('/products/:id', authenticate, ensureApprovedVendor, deleteVendorProduct);
 
-export default router;
+// Seller order fulfillment
+router.get('/orders', authenticate, ensureApprovedVendor, getVendorOrdersController);
+router.patch(
+  '/seller-orders/:id/status',
+  authenticate,
+  ensureApprovedVendor,
+  validate(updateFulfillmentStatusSchema),
+  updateSellerOrderStatusController
+);
 
+export default router;
