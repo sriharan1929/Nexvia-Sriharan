@@ -1,5 +1,8 @@
 import { Response, NextFunction } from 'express';
 import { AuthenticatedRequest } from '../types';
+import Order from '../models/Order';
+import { AppError } from '../middleware/errorHandler';
+import { generateInvoicePDF } from '../services/invoice.service';
 import {
   getCustomerOrders,
   getCustomerOrderById,
@@ -95,6 +98,31 @@ export const updateSellerOrderStatusController = async (
       message: 'Fulfillment status updated',
       data: { sellerOrder: updated },
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const downloadInvoiceController = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const orderId = req.params.id as string;
+    const userId = req.user!.id;
+    const isAdmin = req.user!.roles.includes('ADMIN');
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+      throw new AppError('Order not found', 404);
+    }
+
+    if (!isAdmin && order.customerId.toString() !== userId) {
+      throw new AppError('Forbidden: you do not own this order', 403);
+    }
+
+    await generateInvoicePDF(orderId, res);
   } catch (error) {
     next(error);
   }

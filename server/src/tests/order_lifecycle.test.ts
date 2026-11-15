@@ -123,3 +123,4 @@ describe('Fulfillment State Machine Transitions', () => {
     expect(isTransitionAllowed(FulfillmentStatus.DELIVERED, FulfillmentStatus.PLACED)).toBe(false);
   });
 });
+

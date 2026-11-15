@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Button from '../components/ui/Button';
 import api from '../lib/api';
 import { formatDate } from '../lib/utils';
 import toast from 'react-hot-toast';
-import { Check, X, Shield, Clock, AlertCircle } from 'lucide-react';
+import { Check, X, Shield, Clock, AlertCircle, TrendingUp } from 'lucide-react';
 
 export default function AdminVendorsPage() {
   const [vendors, setVendors] = useState<any[]>([]);
@@ -83,8 +84,15 @@ export default function AdminVendorsPage() {
             </p>
           </div>
 
-          {/* Filter Tabs */}
-          <div className="flex rounded-lg border border-gray-200 bg-white p-1 text-xs font-semibold">
+          <div className="flex flex-wrap items-center gap-3">
+            <Link to="/admin/analytics">
+              <Button variant="secondary" size="sm">
+                <TrendingUp className="w-4 h-4 mr-1.5" /> Analytics & Coupons
+              </Button>
+            </Link>
+
+            {/* Filter Tabs */}
+            <div className="flex rounded-lg border border-gray-200 bg-white p-1 text-xs font-semibold">
             {['PENDING', 'APPROVED', 'REJECTED', ''].map((tab) => (
               <button
                 key={tab}
@@ -98,6 +106,7 @@ export default function AdminVendorsPage() {
                 {tab || 'ALL'}
               </button>
             ))}
+            </div>
           </div>
         </div>
 

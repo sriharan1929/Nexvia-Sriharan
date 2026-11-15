@@ -132,3 +132,4 @@ orderSchema.pre('validate', function () {
 
 export const Order: Model<IOrder> = mongoose.model<IOrder>('Order', orderSchema);
 export default Order;
+

@@ -39,6 +39,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.10",
     "@types/node": "^26.6.6",
+    "@types/pdfkit": "^0.17.7",
     "@types/supertest": "^7.2.1",
     "supertest": "^7.3.2",
     "ts-node-dev": "^2.0.0",

@@ -6,6 +6,7 @@ import RegisterPage from '../pages/RegisterPage';
 import VendorApplyPage from '../pages/VendorApplyPage';
 import VendorDashboardPage from '../pages/VendorDashboardPage';
 import AdminVendorsPage from '../pages/AdminVendorsPage';
+import AdminAnalyticsPage from '../pages/AdminAnalyticsPage';
 import CatalogPage from '../pages/CatalogPage';
 import ProductDetailPage from '../pages/ProductDetailPage';
 import CartPage from '../pages/CartPage';
@@ -169,12 +170,28 @@ export default function AppRouter() {
         }
       />
 
-      {/* Admin Moderation Console */}
+      {/* Admin Moderation & Analytics Console */}
+      <Route
+        path="/admin/analytics"
+        element={
+          <ProtectedRoute allowedRoles={['ADMIN']}>
+            <AdminAnalyticsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/vendors"
+        element={
+          <ProtectedRoute allowedRoles={['ADMIN']}>
+            <AdminVendorsPage />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/admin/*"
         element={
           <ProtectedRoute allowedRoles={['ADMIN']}>
-            <AdminVendorsPage />
+            <AdminAnalyticsPage />
           </ProtectedRoute>
         }
       />

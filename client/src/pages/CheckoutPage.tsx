@@ -10,7 +10,7 @@ import useCart from '../hooks/useCart';
 import api from '../lib/api';
 import { formatPrice } from '../lib/utils';
 import toast from 'react-hot-toast';
-import { Store, ShieldCheck, ArrowLeft, CreditCard, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Store, ShieldCheck, ArrowLeft, CreditCard, Sparkles, CheckCircle2, Tag, X } from 'lucide-react';
 
 const checkoutAddressSchema = z.object({
   name: z.string().min(2, 'Full name is required').max(100),
@@ -49,6 +49,41 @@ export default function CheckoutPage() {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'simulate'>('simulate');
+  const [couponInput, setCouponInput] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discountPaise: number } | null>(null);
+  const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
+
+  const discountPaise = appliedCoupon ? appliedCoupon.discountPaise : 0;
+  const finalTotalPaise = Math.max(0, subtotalPaise - discountPaise);
+
+  const handleApplyCoupon = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!couponInput.trim()) return;
+
+    try {
+      setIsValidatingCoupon(true);
+      const res = await api.post('/coupons/validate', {
+        code: couponInput.trim(),
+        subtotalPaise,
+      });
+      const data = res.data.data;
+      setAppliedCoupon({
+        code: data.code,
+        discountPaise: data.discountPaise,
+      });
+      toast.success(`Coupon "${data.code}" applied! Saved ${formatPrice(data.discountPaise)}`);
+      setCouponInput('');
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Invalid coupon code');
+    } finally {
+      setIsValidatingCoupon(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    toast('Coupon removed', { icon: 'ℹ️' });
+  };
 
   const {
     register,
@@ -94,6 +129,7 @@ export default function CheckoutPage() {
       // 1. Create checkout session & parent order
       const sessionRes = await api.post('/checkout/session', {
         address: addressData,
+        couponCode: appliedCoupon?.code,
       });
 
       const { order, razorpayOrderId, keyId, amountPaise } = sessionRes.data.data;
@@ -369,18 +405,69 @@ export default function CheckoutPage() {
                   Payment Summary
                 </h2>
 
+                {/* Coupon Code Section */}
+                <div className="mb-4 pb-4 border-b border-gray-100">
+                  {appliedCoupon ? (
+                    <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg p-2.5">
+                      <div className="flex items-center space-x-2">
+                        <Tag className="w-4 h-4 text-green-600" />
+                        <div>
+                          <span className="font-bold text-xs text-green-800">
+                            {appliedCoupon.code}
+                          </span>
+                          <span className="text-xs text-green-600 ml-1.5 font-medium">
+                            (-{formatPrice(appliedCoupon.discountPaise)})
+                          </span>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleRemoveCoupon}
+                        className="text-gray-400 hover:text-red-500 transition"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex space-x-2">
+                      <input
+                        type="text"
+                        value={couponInput}
+                        onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                        placeholder="Promo Code (e.g. SAVE10)"
+                        className="flex-1 px-3 py-1.5 border border-gray-200 rounded-lg text-xs uppercase font-mono tracking-wider focus:outline-none focus:ring-1 focus:ring-amber-500"
+                      />
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        isLoading={isValidatingCoupon}
+                        onClick={handleApplyCoupon}
+                      >
+                        Apply
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
                 <div className="space-y-3 text-sm mb-6">
                   <div className="flex justify-between text-gray-600">
                     <span>Item Subtotal ({itemCount} items)</span>
                     <span className="font-semibold text-gray-800">{formatPrice(subtotalPaise)}</span>
                   </div>
+                  {discountPaise > 0 && (
+                    <div className="flex justify-between text-green-600">
+                      <span>Promo Discount ({appliedCoupon?.code})</span>
+                      <span className="font-semibold">-{formatPrice(discountPaise)}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-gray-600">
                     <span>Delivery Charges</span>
                     <span className="text-green-600 font-semibold">FREE</span>
                   </div>
                   <div className="border-t border-gray-100 pt-3 flex justify-between text-base font-black text-gray-900">
                     <span>Total Amount</span>
-                    <span>{formatPrice(subtotalPaise)}</span>
+                    <span>{formatPrice(finalTotalPaise)}</span>
                   </div>
                 </div>
 
@@ -394,7 +481,7 @@ export default function CheckoutPage() {
                   <CreditCard className="w-5 h-5 mr-1.5" />
                   <span>
                     {paymentMethod === 'simulate' ? 'Simulate & Confirm Order' : 'Pay via Razorpay'}{' '}
-                    ({formatPrice(subtotalPaise)})
+                    ({formatPrice(finalTotalPaise)})
                   </span>
                 </Button>
 

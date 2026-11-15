@@ -30,6 +30,14 @@ export default function Navbar() {
               >
                 Browse Catalog
               </Link>
+              {isAuthenticated && (
+                <Link
+                  to="/orders"
+                  className="text-gray-600 hover:text-amber-600 font-medium text-sm transition"
+                >
+                  My Orders
+                </Link>
+              )}
             </nav>
           </div>
 

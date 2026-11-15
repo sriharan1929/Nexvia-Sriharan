@@ -11,3 +11,4 @@ router.post('/razorpay/verify', authenticate, verifyPayment);
 router.post('/simulate', authenticate, simulatePayment);
 
 export default router;
+

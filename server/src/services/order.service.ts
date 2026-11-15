@@ -5,6 +5,7 @@ import SellerOrder from '../models/SellerOrder';
 import InventoryReservation from '../models/InventoryReservation';
 import Product from '../models/Product';
 import { createGatewayOrder } from './payment.service';
+import { validateCoupon, incrementCouponUsage } from './coupon.service';
 import { env } from '../config';
 import { FulfillmentStatus, PaymentStatus, TransferStatus } from '../types';
 import { AppError } from '../middleware/errorHandler';
@@ -42,12 +43,18 @@ const ALLOWED_TRANSITIONS: Record<FulfillmentStatus, FulfillmentStatus[]> = {
 export const previewCheckout = async (
   userId: string,
   _address: IAddressSnapshot,
-  _couponCode?: string
+  couponCode?: string
 ): Promise<CheckoutPreviewResponse> => {
   const cart = await getCart(userId);
 
   if (cart.items.length === 0) {
     throw new AppError('Your cart is empty. Please add items before checking out.', 400);
+  }
+
+  let discountPaise = 0;
+  if (couponCode) {
+    const couponRes = await validateCoupon(couponCode, cart.subtotalPaise);
+    discountPaise = couponRes.discountPaise;
   }
 
   // Group items by vendor
@@ -67,7 +74,12 @@ export const previewCheckout = async (
   const vendorPackages: VendorPackagePreview[] = [];
 
   for (const [vId, group] of vendorMap.entries()) {
-    const pkgSubtotal = group.items.reduce((sum, item) => sum + item.lineTotalPaise, 0);
+    const rawSubtotal = group.items.reduce((sum, item) => sum + item.lineTotalPaise, 0);
+    const allocatedDiscount =
+      cart.subtotalPaise > 0
+        ? Math.round((discountPaise * rawSubtotal) / cart.subtotalPaise)
+        : 0;
+    const pkgSubtotal = Math.max(0, rawSubtotal - allocatedDiscount);
     const commPaise = Math.round(pkgSubtotal * commissionRate);
     const netPaise = pkgSubtotal - commPaise;
 
@@ -83,8 +95,7 @@ export const previewCheckout = async (
 
   const shippingPaise = 0; // Free delivery
   const taxPaise = 0; // Inclusive
-  const discountPaise = 0;
-  const totalPaise = cart.subtotalPaise - discountPaise + shippingPaise + taxPaise;
+  const totalPaise = Math.max(0, cart.subtotalPaise - discountPaise + shippingPaise + taxPaise);
 
   return {
     vendorPackages,
@@ -103,12 +114,21 @@ export const previewCheckout = async (
 export const createCheckoutSession = async (
   userId: string,
   address: IAddressSnapshot,
-  _couponCode?: string
+  couponCode?: string
 ) => {
   const cart = await getCart(userId);
 
   if (cart.items.length === 0) {
     throw new AppError('Your cart is empty', 400);
+  }
+
+  let discountPaise = 0;
+  let appliedCoupon: any = null;
+
+  if (couponCode) {
+    const couponRes = await validateCoupon(couponCode, cart.subtotalPaise);
+    discountPaise = couponRes.discountPaise;
+    appliedCoupon = couponRes.coupon;
   }
 
   // 1. Atomically reserve inventory for every item
@@ -148,8 +168,10 @@ export const createCheckoutSession = async (
   try {
     const shippingPaise = 0;
     const taxPaise = 0;
-    const discountPaise = 0;
-    const totalPaise = cart.subtotalPaise - discountPaise + shippingPaise + taxPaise;
+    const totalPaise = Math.max(
+      0,
+      cart.subtotalPaise - discountPaise + shippingPaise + taxPaise
+    );
 
     // 2. Create Parent Order
     const parentOrder = await Order.create({
@@ -160,6 +182,14 @@ export const createCheckoutSession = async (
       shippingPaise,
       taxPaise,
       totalPaise,
+      couponId: appliedCoupon?._id,
+      couponSnapshot: appliedCoupon
+        ? {
+            code: appliedCoupon.code,
+            type: appliedCoupon.type,
+            value: appliedCoupon.valuePaise || appliedCoupon.percentage || 0,
+          }
+        : undefined,
       paymentStatus: PaymentStatus.PENDING,
     });
 
@@ -198,10 +228,15 @@ export const createCheckoutSession = async (
     const sellerOrdersToCreate = [];
 
     for (const [vendorId, vItems] of vendorMap.entries()) {
-      const vendorSubtotalPaise = vItems.reduce(
+      const rawSubtotal = vItems.reduce(
         (sum, item) => sum + item.lineTotalPaise,
         0
       );
+      const allocatedDiscount =
+        cart.subtotalPaise > 0
+          ? Math.round((discountPaise * rawSubtotal) / cart.subtotalPaise)
+          : 0;
+      const vendorSubtotalPaise = Math.max(0, rawSubtotal - allocatedDiscount);
       const commissionPaise = Math.round(vendorSubtotalPaise * commissionRate);
       const vendorNetPaise = vendorSubtotalPaise - commissionPaise;
 
@@ -231,7 +266,12 @@ export const createCheckoutSession = async (
 
     const createdSellerOrders = await SellerOrder.insertMany(sellerOrdersToCreate);
 
-    // 5. Clear cart in Redis upon checkout session creation
+    // 5. Increment coupon usage if applied
+    if (appliedCoupon) {
+      await incrementCouponUsage(appliedCoupon._id.toString());
+    }
+
+    // 6. Clear cart in Redis upon checkout session creation
     await clearCart(userId);
 
     return {

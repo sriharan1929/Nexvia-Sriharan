@@ -13,6 +13,7 @@ import {
   Truck,
   ExternalLink,
   CreditCard,
+  Download,
 } from 'lucide-react';
 
 const FULFILLMENT_STEPS = ['PLACED', 'PACKED', 'SHIPPED', 'DELIVERED'];
@@ -22,6 +23,7 @@ export default function OrderDetailPage() {
   const [order, setOrder] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isPaying, setIsPaying] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const fetchOrderDetail = async () => {
     try {
@@ -52,6 +54,29 @@ export default function OrderDetailPage() {
       toast.error(err.response?.data?.message || 'Payment processing failed');
     } finally {
       setIsPaying(false);
+    }
+  };
+
+  const handleDownloadInvoice = async () => {
+    if (!order) return;
+    try {
+      setIsDownloading(true);
+      const res = await api.get(`/orders/${order._id}/invoice.pdf`, {
+        responseType: 'blob',
+      });
+      const url = window.URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Invoice-${order.orderNumber}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      toast.success('Invoice downloaded!');
+    } catch (err: any) {
+      toast.error('Failed to download invoice PDF');
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -104,9 +129,19 @@ export default function OrderDetailPage() {
 
             <div className="flex items-center space-x-2">
               {order.paymentStatus === 'PAID' && (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800">
-                  <CheckCircle2 className="w-4 h-4 mr-1" /> Paid
-                </span>
+                <div className="flex items-center space-x-2">
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800">
+                    <CheckCircle2 className="w-4 h-4 mr-1" /> Paid
+                  </span>
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    isLoading={isDownloading}
+                    onClick={handleDownloadInvoice}
+                  >
+                    <Download className="w-3.5 h-3.5 mr-1" /> Invoice (PDF)
+                  </Button>
+                </div>
               )}
               {order.paymentStatus === 'PENDING' && (
                 <div className="flex items-center space-x-2">
