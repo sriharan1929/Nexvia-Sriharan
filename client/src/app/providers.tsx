@@ -3,6 +3,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from '../features/auth/AuthContext';
 import { CartProvider } from '../features/cart/CartContext';
+import { WishlistProvider } from '../features/wishlist/WishlistContext';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,8 +24,10 @@ export default function Providers({ children }: ProvidersProps) {
       <BrowserRouter>
         <AuthProvider>
           <CartProvider>
-            {children}
-            <Toaster position="top-right" />
+            <WishlistProvider>
+              {children}
+              <Toaster position="top-right" />
+            </WishlistProvider>
           </CartProvider>
         </AuthProvider>
       </BrowserRouter>

@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+import ProductCard from '../components/ProductCard';
 import api from '../lib/api';
-import { formatPrice } from '../lib/utils';
 import type { Product, Category } from '../types';
-import { Search, Store, ArrowUpDown } from 'lucide-react';
+import { ChevronRight, X, SlidersHorizontal, ArrowUpDown } from 'lucide-react';
 
 export default function CatalogPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -15,9 +16,12 @@ export default function CatalogPage() {
   // Filters from URL
   const q = searchParams.get('q') || '';
   const selectedCategory = searchParams.get('category') || '';
-  const sort = searchParams.get('sort') || 'newest';
+  const sort = searchParams.get('sort') || 'recommended';
+  const priceRange = searchParams.get('price') || '';
+  const minRating = searchParams.get('rating') || '';
 
-  const [searchTerm, setSearchTerm] = useState(q);
+  // Mobile filter drawer state
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   useEffect(() => {
     const fetchCatalog = async () => {
@@ -26,14 +30,41 @@ export default function CatalogPage() {
         const queryParams = new URLSearchParams();
         if (q) queryParams.set('q', q);
         if (selectedCategory) queryParams.set('category', selectedCategory);
-        if (sort) queryParams.set('sort', sort);
+        if (sort && sort !== 'recommended') queryParams.set('sort', sort);
 
         const [prodRes, catRes] = await Promise.all([
           api.get(`/products?${queryParams.toString()}`),
           api.get('/categories'),
         ]);
 
-        setProducts(prodRes.data.data || []);
+        let items: Product[] = prodRes.data.data.products || prodRes.data.data || [];
+
+        // Client-side price & rating refinement if filtered
+        if (priceRange) {
+          if (priceRange === 'under1500') {
+            items = items.filter((p) => p.pricePaise < 150000);
+          } else if (priceRange === '1500to3000') {
+            items = items.filter((p) => p.pricePaise >= 150000 && p.pricePaise <= 300000);
+          } else if (priceRange === 'above3000') {
+            items = items.filter((p) => p.pricePaise > 300000);
+          }
+        }
+
+        if (minRating) {
+          const ratingVal = parseFloat(minRating);
+          items = items.filter((p) => (p.ratingSummary?.average || 0) >= ratingVal);
+        }
+
+        // Sorting
+        if (sort === 'price_asc') {
+          items.sort((a, b) => a.pricePaise - b.pricePaise);
+        } else if (sort === 'price_desc') {
+          items.sort((a, b) => b.pricePaise - a.pricePaise);
+        } else if (sort === 'rating') {
+          items.sort((a, b) => (b.ratingSummary?.average || 0) - (a.ratingSummary?.average || 0));
+        }
+
+        setProducts(items);
         setCategories(catRes.data.data || []);
       } catch (error) {
         console.error('Failed to load catalog data:', error);
@@ -43,170 +74,381 @@ export default function CatalogPage() {
     };
 
     fetchCatalog();
-  }, [q, selectedCategory, sort]);
+  }, [q, selectedCategory, sort, priceRange, minRating]);
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const updateParam = (key: string, value: string) => {
     const newParams = new URLSearchParams(searchParams);
-    if (searchTerm.trim()) {
-      newParams.set('q', searchTerm.trim());
+    if (value) {
+      newParams.set(key, value);
     } else {
-      newParams.delete('q');
+      newParams.delete(key);
     }
     setSearchParams(newParams);
   };
 
-  const handleCategoryChange = (catSlug: string) => {
-    const newParams = new URLSearchParams(searchParams);
-    if (catSlug) {
-      newParams.set('category', catSlug);
-    } else {
-      newParams.delete('category');
-    }
+  const clearAllFilters = () => {
+    const newParams = new URLSearchParams();
+    if (q) newParams.set('q', q);
     setSearchParams(newParams);
   };
 
-  const handleSortChange = (newSort: string) => {
-    const newParams = new URLSearchParams(searchParams);
-    newParams.set('sort', newSort);
-    setSearchParams(newParams);
-  };
+  const currentCategory = categories.find((c) => c.slug === selectedCategory);
+  const pageTitle = q
+    ? `Results for "${q}"`
+    : currentCategory?.name || (selectedCategory ? selectedCategory.toUpperCase() : 'Lifestyle & Fashion');
+
+  const hasActiveFilters = Boolean(selectedCategory || priceRange || minRating);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col font-sans">
       <Navbar />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Search & Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-black text-gray-900 tracking-tight mb-4">
-            Marketplace Catalog
-          </h1>
+      <main className="flex-1 max-w-[1440px] w-full mx-auto px-4 sm:px-8 py-4">
+        {/* Breadcrumb Navigation */}
+        <nav className="flex items-center space-x-1.5 text-xs text-[#535766] mb-4">
+          <Link to="/" className="hover:text-[#282C3F] transition">
+            Home
+          </Link>
+          <ChevronRight className="w-3 h-3 text-gray-400" />
+          <Link to="/products" className="hover:text-[#282C3F] transition">
+            Clothing
+          </Link>
+          <ChevronRight className="w-3 h-3 text-gray-400" />
+          <span className="font-bold text-[#282C3F]">{pageTitle}</span>
+        </nav>
 
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-            {/* Search Bar */}
-            <form onSubmit={handleSearchSubmit} className="relative w-full md:max-w-md">
-              <input
-                type="text"
-                placeholder="Search products by title, tag, or description..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-300 text-sm focus:border-amber-500 focus:outline-none shadow-sm"
-              />
-              <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-3" />
-            </form>
-
-            {/* Sort Dropdown */}
-            <div className="flex items-center space-x-2 w-full md:w-auto justify-end">
-              <ArrowUpDown className="w-4 h-4 text-gray-500" />
-              <select
-                value={sort}
-                onChange={(e) => handleSortChange(e.target.value)}
-                className="rounded-lg border border-gray-300 py-1.5 px-3 text-sm focus:border-amber-500 focus:outline-none bg-white shadow-sm"
-              >
-                <option value="newest">Newest Arrivals</option>
-                <option value="price_asc">Price: Low to High</option>
-                <option value="price_desc">Price: High to Low</option>
-                <option value="rating">Highest Rated</option>
-              </select>
-            </div>
+        {/* Category Heading & Item Count */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-[#E9E9ED] mb-6 gap-4">
+          <div>
+            <h1 className="text-base sm:text-lg font-bold text-[#282C3F] tracking-tight">
+              {pageTitle}{' '}
+              <span className="font-normal text-sm text-[#535766]">
+                - {products.length} {products.length === 1 ? 'item' : 'items'}
+              </span>
+            </h1>
           </div>
 
-          {/* Category Filter Pills */}
-          <div className="flex items-center space-x-2 mt-4 overflow-x-auto pb-2 text-xs font-semibold">
+          {/* Right Toolbar: Sort Dropdown & Mobile Filter Trigger */}
+          <div className="flex items-center space-x-4 self-end sm:self-auto">
             <button
-              onClick={() => handleCategoryChange('')}
-              className={`px-3 py-1.5 rounded-full whitespace-nowrap transition ${
-                !selectedCategory
-                  ? 'bg-amber-600 text-white'
-                  : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-100'
-              }`}
+              onClick={() => setShowMobileFilters(true)}
+              className="lg:hidden flex items-center space-x-1.5 px-3 py-1.5 border border-[#E9E9ED] rounded-sm text-xs font-bold text-[#282C3F]"
             >
-              All Categories
+              <SlidersHorizontal className="w-3.5 h-3.5" />
+              <span>Filters</span>
             </button>
-            {categories.map((c) => (
-              <button
-                key={c._id}
-                onClick={() => handleCategoryChange(c.slug)}
-                className={`px-3 py-1.5 rounded-full whitespace-nowrap transition ${
-                  selectedCategory === c.slug
-                    ? 'bg-amber-600 text-white'
-                    : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                {c.name}
-              </button>
-            ))}
+
+            <div className="flex items-center space-x-2">
+              <span className="text-xs text-[#535766] hidden sm:inline">Sort by:</span>
+              <div className="relative">
+                <select
+                  value={sort}
+                  onChange={(e) => updateParam('sort', e.target.value)}
+                  className="appearance-none bg-white border border-[#E9E9ED] rounded-sm py-1.5 pl-3 pr-8 text-xs font-bold text-[#282C3F] cursor-pointer hover:border-[#282C3F] focus:outline-none transition"
+                >
+                  <option value="recommended">Recommended</option>
+                  <option value="price_asc">Price: Low to High</option>
+                  <option value="price_desc">Price: High to Low</option>
+                  <option value="rating">Customer Rating</option>
+                  <option value="newest">What's New</option>
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                  <ArrowUpDown className="w-3 h-3" />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Product Grid */}
-        {isLoading ? (
-          <div className="py-24 text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600 mx-auto" />
-          </div>
-        ) : products.length === 0 ? (
-          <div className="bg-white rounded-xl p-12 text-center border border-gray-100 shadow-sm">
-            <p className="text-gray-500 text-base mb-2">No matching products found.</p>
-            <p className="text-gray-400 text-sm">
-              Try adjusting your search terms or clearing your category filters.
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.map((prod) => (
-              <Link
-                key={prod._id}
-                to={`/products/${prod.slug}`}
-                className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition flex flex-col group"
-              >
-                <div className="aspect-square bg-gray-100 overflow-hidden relative">
-                  {prod.images?.[0]?.url ? (
-                    <img
-                      src={prod.images[0].url}
-                      alt={prod.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm font-medium">
-                      No Image
-                    </div>
-                  )}
-                  {prod.stock <= 5 && prod.stock > 0 && (
-                    <span className="absolute top-2 right-2 bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">
-                      Only {prod.stock} left
-                    </span>
-                  )}
-                </div>
+        {/* Active Filter Chips */}
+        {hasActiveFilters && (
+          <div className="flex flex-wrap items-center gap-2 mb-6 pb-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#535766] mr-2">
+              Active Filters:
+            </span>
 
-                <div className="p-4 flex-1 flex flex-col">
-                  {/* Seller Store Name */}
-                  <div className="flex items-center text-xs text-amber-700 mb-1 font-medium">
-                    <Store className="w-3.5 h-3.5 mr-1 text-amber-600" />
-                    <span>{prod.vendor?.storeName || 'Verified Merchant'}</span>
-                  </div>
+            {selectedCategory && (
+              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-[#F5F5F6] text-[#282C3F] border border-[#E9E9ED]">
+                {currentCategory?.name || selectedCategory}
+                <button
+                  onClick={() => updateParam('category', '')}
+                  className="ml-1.5 text-gray-400 hover:text-red-500"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </span>
+            )}
 
-                  <h3 className="font-bold text-gray-900 text-sm group-hover:text-amber-600 transition line-clamp-2 mb-2">
-                    {prod.title}
-                  </h3>
+            {priceRange && (
+              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-[#F5F5F6] text-[#282C3F] border border-[#E9E9ED]">
+                {priceRange === 'under1500'
+                  ? 'Under ₹1,500'
+                  : priceRange === '1500to3000'
+                  ? '₹1,500 - ₹3,000'
+                  : 'Above ₹3,000'}
+                <button
+                  onClick={() => updateParam('price', '')}
+                  className="ml-1.5 text-gray-400 hover:text-red-500"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </span>
+            )}
 
-                  <div className="mt-auto pt-2 flex items-center justify-between border-t border-gray-100">
-                    <div>
-                      <span className="text-base font-extrabold text-gray-900">
-                        {formatPrice(prod.pricePaise)}
-                      </span>
-                    </div>
-                    <span className="text-xs text-green-700 font-semibold bg-green-50 px-2 py-0.5 rounded">
-                      In Stock
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            ))}
+            {minRating && (
+              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-[#F5F5F6] text-[#282C3F] border border-[#E9E9ED]">
+                {minRating}★ and above
+                <button
+                  onClick={() => updateParam('rating', '')}
+                  className="ml-1.5 text-gray-400 hover:text-red-500"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </span>
+            )}
+
+            <button
+              onClick={clearAllFilters}
+              className="text-xs font-bold text-[#FF3F6C] hover:underline ml-2"
+            >
+              Clear All
+            </button>
           </div>
         )}
+
+        {/* 2-Column PLP Layout: Sidebar + Product Grid */}
+        <div className="flex gap-8">
+          {/* Left Filter Sidebar (Desktop) */}
+          <aside className="hidden lg:block w-64 shrink-0 border-r border-[#E9E9ED] pr-6 space-y-6">
+            <div className="flex items-center justify-between pb-3 border-b border-[#E9E9ED]">
+              <span className="font-bold text-xs uppercase tracking-wider text-[#282C3F]">
+                Filters
+              </span>
+              {hasActiveFilters && (
+                <button
+                  onClick={clearAllFilters}
+                  className="text-xs font-bold text-[#FF3F6C] hover:underline uppercase"
+                >
+                  Clear All
+                </button>
+              )}
+            </div>
+
+            {/* Categories Filter */}
+            <div className="space-y-3 pb-6 border-b border-[#E9E9ED]">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-[#282C3F]">
+                Categories
+              </h4>
+              <div className="space-y-2 text-xs text-[#282C3F]">
+                <label className="flex items-center space-x-2.5 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="category"
+                    checked={!selectedCategory}
+                    onChange={() => updateParam('category', '')}
+                    className="accent-[#FF3F6C]"
+                  />
+                  <span>All Categories</span>
+                </label>
+                {categories.map((c) => (
+                  <label key={c._id} className="flex items-center space-x-2.5 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="category"
+                      checked={selectedCategory === c.slug}
+                      onChange={() => updateParam('category', c.slug)}
+                      className="accent-[#FF3F6C]"
+                    />
+                    <span className="truncate">{c.name}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Price Filter */}
+            <div className="space-y-3 pb-6 border-b border-[#E9E9ED]">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-[#282C3F]">
+                Price
+              </h4>
+              <div className="space-y-2 text-xs text-[#282C3F]">
+                <label className="flex items-center space-x-2.5 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="price"
+                    checked={!priceRange}
+                    onChange={() => updateParam('price', '')}
+                    className="accent-[#FF3F6C]"
+                  />
+                  <span>Any Price</span>
+                </label>
+                <label className="flex items-center space-x-2.5 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="price"
+                    checked={priceRange === 'under1500'}
+                    onChange={() => updateParam('price', 'under1500')}
+                    className="accent-[#FF3F6C]"
+                  />
+                  <span>Under ₹1,500</span>
+                </label>
+                <label className="flex items-center space-x-2.5 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="price"
+                    checked={priceRange === '1500to3000'}
+                    onChange={() => updateParam('price', '1500to3000')}
+                    className="accent-[#FF3F6C]"
+                  />
+                  <span>₹1,500 to ₹3,000</span>
+                </label>
+                <label className="flex items-center space-x-2.5 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="price"
+                    checked={priceRange === 'above3000'}
+                    onChange={() => updateParam('price', 'above3000')}
+                    className="accent-[#FF3F6C]"
+                  />
+                  <span>Above ₹3,000</span>
+                </label>
+              </div>
+            </div>
+
+            {/* Customer Rating Filter */}
+            <div className="space-y-3 pb-6 border-b border-[#E9E9ED]">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-[#282C3F]">
+                Customer Rating
+              </h4>
+              <div className="space-y-2 text-xs text-[#282C3F]">
+                <label className="flex items-center space-x-2.5 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="rating"
+                    checked={!minRating}
+                    onChange={() => updateParam('rating', '')}
+                    className="accent-[#FF3F6C]"
+                  />
+                  <span>All Ratings</span>
+                </label>
+                <label className="flex items-center space-x-2.5 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="rating"
+                    checked={minRating === '4'}
+                    onChange={() => updateParam('rating', '4')}
+                    className="accent-[#FF3F6C]"
+                  />
+                  <span>4★ and above</span>
+                </label>
+                <label className="flex items-center space-x-2.5 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="rating"
+                    checked={minRating === '3'}
+                    onChange={() => updateParam('rating', '3')}
+                    className="accent-[#FF3F6C]"
+                  />
+                  <span>3★ and above</span>
+                </label>
+              </div>
+            </div>
+          </aside>
+
+          {/* Right Product Grid */}
+          <div className="flex-1">
+            {isLoading ? (
+              <div className="py-24 text-center">
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#FF3F6C] mx-auto" />
+                <p className="text-xs text-[#535766] font-semibold mt-4">
+                  Loading collections...
+                </p>
+              </div>
+            ) : products.length === 0 ? (
+              <div className="py-24 text-center max-w-md mx-auto">
+                <div className="text-4xl mb-3">🔍</div>
+                <h3 className="font-bold text-base text-[#282C3F] mb-1">
+                  We couldn't find any matches
+                </h3>
+                <p className="text-xs text-[#535766] mb-6">
+                  Please check your search term or try clearing some filters to broaden your search.
+                </p>
+                <button
+                  onClick={clearAllFilters}
+                  className="px-6 py-2.5 bg-[#FF3F6C] text-white text-xs font-bold uppercase rounded-sm hover:bg-[#e0325d] transition shadow-sm"
+                >
+                  Clear All Filters
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+                {products.map((prod) => (
+                  <ProductCard key={prod._id} product={prod} />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </main>
+
+      {/* Mobile Filter Drawer */}
+      {showMobileFilters && (
+        <div className="fixed inset-0 z-50 flex bg-black/50 lg:hidden">
+          <div className="w-4/5 max-w-sm bg-white h-full p-6 flex flex-col shadow-2xl animate-in slide-in-from-left">
+            <div className="flex items-center justify-between pb-4 border-b border-[#E9E9ED]">
+              <span className="font-bold text-sm uppercase text-[#282C3F]">Filters</span>
+              <button
+                onClick={() => setShowMobileFilters(false)}
+                className="text-gray-500 hover:text-gray-800"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto py-4 space-y-6">
+              <div>
+                <h4 className="text-xs font-bold uppercase text-[#282C3F] mb-3">Categories</h4>
+                <div className="space-y-2 text-xs">
+                  {categories.map((c) => (
+                    <label key={c._id} className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        name="mob-category"
+                        checked={selectedCategory === c.slug}
+                        onChange={() => {
+                          updateParam('category', c.slug);
+                          setShowMobileFilters(false);
+                        }}
+                        className="accent-[#FF3F6C]"
+                      />
+                      <span>{c.name}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-[#E9E9ED] flex space-x-3">
+              <button
+                onClick={() => {
+                  clearAllFilters();
+                  setShowMobileFilters(false);
+                }}
+                className="flex-1 py-2 text-xs font-bold border border-[#E9E9ED] text-[#282C3F] rounded-sm uppercase"
+              >
+                Clear
+              </button>
+              <button
+                onClick={() => setShowMobileFilters(false)}
+                className="flex-1 py-2 text-xs font-bold bg-[#FF3F6C] text-white rounded-sm uppercase"
+              >
+                Apply
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <Footer />
     </div>
   );
 }
-
