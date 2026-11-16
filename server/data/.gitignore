@@ -1,0 +1,8 @@
+# Ignore large dataset files
+*.csv
+*.json.gz
+*.zip
+*.tar.gz
+
+# Keep the README
+!README.md
