@@ -5,7 +5,7 @@ import Button from '../components/ui/Button';
 import { useWishlist } from '../hooks/useWishlist';
 import useCart from '../hooks/useCart';
 import { formatPrice } from '../lib/utils';
-import { X, Heart, ShoppingBag } from 'lucide-react';
+import { X, Heart, ShoppingBag, ArrowRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function WishlistPage() {

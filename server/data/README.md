@@ -49,3 +49,4 @@ npm run reindex
 - This folder is git-ignored — CSV files are not committed.
 - Products are assigned round-robin to your approved vendors.
 - Images fall back to Unsplash placeholders if Flipkart CDN URLs are unreachable.
+

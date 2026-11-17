@@ -6,9 +6,10 @@
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "seed": "ts-node-dev src/scripts/seed.ts",
-    "import:flipkart": "ts-node-dev src/scripts/import-flipkart.ts",
-    "reindex": "ts-node-dev src/scripts/reindex.ts",
+    "seed": "npm run build && node dist/scripts/seed.js",
+    "load:products": "npm run build && node dist/scripts/load-products.js",
+    "import:flipkart": "npm run build && node dist/scripts/import-flipkart.js",
+    "reindex": "npm run build && node dist/scripts/reindex.js",
     "test": "vitest run",
     "test:watch": "vitest"
   },
