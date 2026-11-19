@@ -261,8 +261,9 @@ export default function VendorOrdersPage() {
                       )}
 
                       {so.fulfillmentStatus === 'DELIVERED' && (
-                        <span className="block text-center text-xs font-bold text-green-700 bg-green-50 py-2 rounded-lg border border-green-200">
-                          ✓ Completed & Delivered
+                        <span className="flex items-center justify-center text-center text-xs font-bold text-green-700 bg-green-50 py-2 rounded-lg border border-green-200">
+                          <Check className="w-3.5 h-3.5 mr-1 text-green-700" />
+                          <span>Completed & Delivered</span>
                         </span>
                       )}
                     </div>

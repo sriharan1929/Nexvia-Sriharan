@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ShieldCheck, RotateCcw } from 'lucide-react';
+import { ShieldCheck, RotateCcw, Smartphone } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -92,7 +92,7 @@ export default function Footer() {
             </h4>
             <div className="space-y-3 mb-6">
               <div className="inline-flex items-center px-4 py-2 border border-[#E9E9ED] rounded-sm bg-white hover:bg-gray-50 transition cursor-pointer space-x-2">
-                <span className="text-xl">📱</span>
+                <Smartphone className="w-5 h-5 text-[#282C3F]" />
                 <div>
                   <p className="text-[10px] text-gray-400">Available on</p>
                   <p className="font-bold text-xs text-[#282C3F]">Google Play & iOS</p>

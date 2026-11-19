@@ -44,9 +44,7 @@ export default function CartPage() {
         code: data.code,
         discountPaise: data.discountPaise,
       });
-      toast.success(`Coupon "${data.code}" applied! Saved ${formatPrice(data.discountPaise)}`, {
-        icon: '🏷️',
-      });
+      toast.success(`Coupon "${data.code}" applied! Saved ${formatPrice(data.discountPaise)}`);
       setCouponCode('');
       setShowCouponModal(false);
     } catch (err: any) {

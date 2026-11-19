@@ -5,7 +5,7 @@ import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
 import api from '../lib/api';
 import type { Product, Category } from '../types';
-import { ChevronRight, X, SlidersHorizontal, ArrowUpDown } from 'lucide-react';
+import { ChevronRight, X, SlidersHorizontal, ArrowUpDown, Star, Search } from 'lucide-react';
 
 export default function CatalogPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -197,7 +197,9 @@ export default function CatalogPage() {
 
             {minRating && (
               <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-[#F5F5F6] text-[#282C3F] border border-[#E9E9ED]">
-                {minRating}★ and above
+                {minRating}
+                <Star className="w-3 h-3 fill-amber-400 text-amber-400 mx-1" />
+                and above
                 <button
                   onClick={() => updateParam('rating', '')}
                   className="ml-1.5 text-gray-400 hover:text-red-500"
@@ -338,7 +340,9 @@ export default function CatalogPage() {
                     onChange={() => updateParam('rating', '4')}
                     className="accent-[#FF3F6C]"
                   />
-                  <span>4★ and above</span>
+                  <span className="flex items-center">
+                    4 <Star className="w-3 h-3 fill-amber-400 text-amber-400 mx-1" /> and above
+                  </span>
                 </label>
                 <label className="flex items-center space-x-2.5 cursor-pointer">
                   <input
@@ -348,7 +352,9 @@ export default function CatalogPage() {
                     onChange={() => updateParam('rating', '3')}
                     className="accent-[#FF3F6C]"
                   />
-                  <span>3★ and above</span>
+                  <span className="flex items-center">
+                    3 <Star className="w-3 h-3 fill-amber-400 text-amber-400 mx-1" /> and above
+                  </span>
                 </label>
               </div>
             </div>
@@ -365,7 +371,7 @@ export default function CatalogPage() {
               </div>
             ) : products.length === 0 ? (
               <div className="py-24 text-center max-w-md mx-auto">
-                <div className="text-4xl mb-3">🔍</div>
+                <Search className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                 <h3 className="font-bold text-base text-[#282C3F] mb-1">
                   We couldn't find any matches
                 </h3>

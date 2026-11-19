@@ -314,30 +314,30 @@ async function ensureCategories(): Promise<Map<string, mongoose.Types.ObjectId>>
 }
 
 async function loadProducts() {
-  console.log('🚀 Connecting to MongoDB Atlas database...');
+  console.log('[CONNECT] Connecting to MongoDB Atlas database...');
   await connectDB();
 
   // 1. Ensure Categories & Vendors
-  console.log('📂 Verifying categories in DB...');
+  console.log('[CATEGORIES] Verifying categories in DB...');
   const categoryMap = await ensureCategories();
 
-  console.log('🏪 Fetching verified vendors...');
+  console.log('[VENDORS] Fetching verified vendors...');
   const vendors = await VendorProfile.find({ approvalStatus: ApprovalStatus.APPROVED }).lean();
   if (vendors.length === 0) {
-    console.error('❌ No approved vendors found. Please run `npm run seed` first.');
+    console.error('[ERROR] No approved vendors found. Please run `npm run seed` first.');
     process.exit(1);
   }
   const vendorIds = vendors.map((v) => v._id as mongoose.Types.ObjectId);
 
   // 2. Clear existing products to ensure clean catalog
-  console.log('🧹 Clearing previous products...');
+  console.log('[CLEAN] Clearing previous products...');
   await Product.deleteMany({});
 
   const productsToInsert: any[] = [];
   let count = 0;
 
   // 3. Add Curated Indian Fashion Items
-  console.log('👗 Preparing curated Indian fashion flagship collection...');
+  console.log('[FASHION] Preparing curated Indian fashion flagship collection...');
   for (const item of CURATED_FASHION_ITEMS) {
     const vendorId = vendorIds[count % vendorIds.length];
     const categoryId = categoryMap.get(item.categorySlug) || categoryMap.get('men-tshirts')!;
@@ -369,12 +369,12 @@ async function loadProducts() {
   }
 
   // 4. Fetch 194 products live from DummyJSON
-  console.log('🌐 Fetching public catalog dataset from DummyJSON API...');
+  console.log('[FETCH] Fetching public catalog dataset from DummyJSON API...');
   try {
     const res = await fetch('https://dummyjson.com/products?limit=194');
     const data: any = await res.json();
     const externalProducts = data.products || [];
-    console.log(`📦 Received ${externalProducts.length} items from API. Formatting for BadaVyapar...`);
+    console.log(`[DATA] Received ${externalProducts.length} items from API. Formatting for BadaVyapar...`);
 
     for (const p of externalProducts) {
       const vendorId = vendorIds[count % vendorIds.length];
@@ -417,26 +417,26 @@ async function loadProducts() {
       count++;
     }
   } catch (err: any) {
-    console.warn('⚠️ Could not fetch from DummyJSON API, proceeding with curated catalog:', err.message);
+    console.warn('[WARN] Could not fetch from DummyJSON API, proceeding with curated catalog:', err.message);
   }
 
   // 5. Bulk Insert into MongoDB
-  console.log(`💾 Inserting ${productsToInsert.length} products into MongoDB Atlas...`);
+  console.log(`[SAVE] Inserting ${productsToInsert.length} products into MongoDB Atlas...`);
   const inserted = await Product.insertMany(productsToInsert, { ordered: false });
 
   console.log('\n======================================================');
-  console.log(`🎉 SUCCESS! Loaded ${inserted.length} products into MongoDB Atlas!`);
+  console.log(`[SUCCESS] Loaded ${inserted.length} products into MongoDB Atlas!`);
   console.log('======================================================');
-  console.log(`📊 Categories Covered: Men, Women, Kids, Electronics, Beauty, Home`);
-  console.log(`🏷️ Flagship Brands: Roadster, HRX, WROGN, H&M, Levi's, Biba, ONLY, boAt, Noise`);
-  console.log(`💵 Currency: Stored in integer paise (converted to ₹ INR for UI)`);
+  console.log(`Categories Covered: Men, Women, Kids, Electronics, Beauty, Home`);
+  console.log(`Flagship Brands: Roadster, HRX, WROGN, H&M, Levi's, Biba, ONLY, boAt, Noise`);
+  console.log(`Currency: Stored in integer paise (converted to INR for UI)`);
   console.log('======================================================\n');
 
   await mongoose.disconnect();
 }
 
 loadProducts().catch((err) => {
-  console.error('❌ Failed to load products:', err);
+  console.error('[ERROR] Failed to load products:', err);
   process.exit(1);
 });
 

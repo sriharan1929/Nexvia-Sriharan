@@ -15,6 +15,7 @@ import {
   RotateCcw,
   Sparkles,
   ArrowRight,
+  Star,
 } from 'lucide-react';
 
 const HERO_SLIDES = [
@@ -339,7 +340,7 @@ export default function HomePage() {
                     {product.ratingSummary && product.ratingSummary.count > 0 && (
                       <div className="absolute bottom-2.5 left-2.5 bg-white/90 px-1.5 py-0.5 rounded-sm text-[10px] font-bold text-[#282C3F] flex items-center space-x-1 shadow-sm">
                         <span>{product.ratingSummary.average.toFixed(1)}</span>
-                        <span className="text-amber-500">★</span>
+                        <Star className="w-2.5 h-2.5 fill-amber-500 text-amber-500" />
                         <span className="text-gray-400">|</span>
                         <span className="text-gray-500">{product.ratingSummary.count}</span>
                       </div>

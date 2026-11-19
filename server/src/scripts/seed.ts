@@ -10,11 +10,11 @@ import { indexProduct } from '../services/search.service';
 import { UserRole, ApprovalStatus, ProductStatus } from '../types';
 
 async function seedDatabase() {
-  console.log('🚀 Starting BadaVyapar marketplace seed process...');
+  console.log('[START] Starting BadaVyapar marketplace seed process...');
   await connectDB();
 
   // 1. Clear existing sample collections
-  console.log('🧹 Purging existing sample data...');
+  console.log('[CLEAN] Purging existing sample data...');
   await Promise.all([
     User.deleteMany({}),
     VendorProfile.deleteMany({}),
@@ -24,7 +24,7 @@ async function seedDatabase() {
   ]);
 
   // 2. Create Users
-  console.log('👤 Seeding core platform users...');
+  console.log('[USERS] Seeding core platform users...');
   const commonPasswordHash = await hashPassword('BadaVyapar@123');
 
   const adminUser = await User.create({
@@ -68,7 +68,7 @@ async function seedDatabase() {
   });
 
   // 3. Create Vendor Profiles
-  console.log('🏪 Seeding vendor store profiles...');
+  console.log('[VENDORS] Seeding vendor store profiles...');
   const vendorProfile1 = await VendorProfile.create({
     userId: vendorUser1._id,
     storeName: 'TechNexus Electronics',
@@ -104,7 +104,7 @@ async function seedDatabase() {
   });
 
   // 4. Create Categories
-  console.log('📂 Seeding catalog categories...');
+  console.log('[CATEGORIES] Seeding catalog categories...');
   const catElectronics = await Category.create({
     name: 'Electronics & Peripherals',
     slug: 'electronics',
@@ -124,7 +124,7 @@ async function seedDatabase() {
   });
 
   // 5. Create Authoritative Products
-  console.log('📦 Seeding marketplace products...');
+  console.log('[PRODUCTS] Seeding marketplace products...');
   const v1Id = vendorProfile1._id;
   const v2Id = vendorProfile2._id;
   const cElecId = catElectronics._id;
@@ -251,7 +251,7 @@ async function seedDatabase() {
   const createdProducts = await Product.insertMany(productsData);
 
   // Sync to Elasticsearch if available
-  console.log('🔍 Syncing products to search index...');
+  console.log('[SEARCH] Syncing products to search index...');
   for (const prod of createdProducts) {
     try {
       await indexProduct(prod);
@@ -261,7 +261,7 @@ async function seedDatabase() {
   }
 
   // 6. Create Promotional Coupons
-  console.log('🏷️ Seeding promotional coupons...');
+  console.log('[COUPONS] Seeding promotional coupons...');
   const thirtyDays = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
   await Coupon.insertMany([
@@ -302,14 +302,14 @@ async function seedDatabase() {
   ]);
 
   console.log('\n======================================================');
-  console.log('🎉 BadaVyapar Marketplace Seed Complete!');
+  console.log('[SUCCESS] BadaVyapar Marketplace Seed Complete!');
   console.log('======================================================');
   console.log('Demo Credentials (All accounts use password: BadaVyapar@123):');
-  console.log('  🛡️ Admin:    admin@badavyapar.com');
-  console.log('  🏪 Vendor 1: seller.tech@badavyapar.com (TechNexus Electronics)');
-  console.log('  🏪 Vendor 2: seller.craft@badavyapar.com (Vedic Craft Handlooms)');
-  console.log('  ⏳ Pending:  seller.urban@badavyapar.com (Urban Vogue Studio)');
-  console.log('  🛒 Customer: customer@badavyapar.com (Priya Verma)');
+  console.log('  [ADMIN]    admin@badavyapar.com');
+  console.log('  [VENDOR 1] seller.tech@badavyapar.com (TechNexus Electronics)');
+  console.log('  [VENDOR 2] seller.craft@badavyapar.com (Vedic Craft Handlooms)');
+  console.log('  [PENDING]  seller.urban@badavyapar.com (Urban Vogue Studio)');
+  console.log('  [CUSTOMER] customer@badavyapar.com (Priya Verma)');
   console.log('------------------------------------------------------');
   console.log('Coupons: SAVE10 (10% off), FLAT200 (₹200 off), WELCOME50 (₹50 off)');
   console.log('======================================================\n');
@@ -318,6 +318,6 @@ async function seedDatabase() {
 }
 
 seedDatabase().catch((err) => {
-  console.error('❌ Seeding failed:', err);
+  console.error('[ERROR] Seeding failed:', err);
   process.exit(1);
 });

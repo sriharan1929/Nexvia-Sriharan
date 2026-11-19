@@ -56,7 +56,7 @@ const CLEAR_FIRST = hasFlag('--clear');
 const DRY_RUN = hasFlag('--dry-run');
 
 if (!CSV_FILE) {
-  console.error('❌  --file argument is required.');
+  console.error('[ERROR] --file argument is required.');
   console.error('    Example: npx ts-node-dev src/scripts/import-flipkart.ts --file ./data/flipkart_com-ecommerce_sample.csv');
   process.exit(1);
 }
@@ -348,7 +348,7 @@ async function ensureCategories(): Promise<Map<string, mongoose.Types.ObjectId>>
     categoryIdMap.set(c.slug, doc._id as mongoose.Types.ObjectId);
   }
 
-  console.log(`📂  Ensured ${categoryIdMap.size} categories in DB.`);
+  console.log(`[CATEGORIES] Ensured ${categoryIdMap.size} categories in DB.`);
   return categoryIdMap;
 }
 
@@ -364,11 +364,11 @@ async function ensureVendors(): Promise<mongoose.Types.ObjectId[]> {
     .lean();
 
   if (existing.length > 0) {
-    console.log(`🏪  Found ${existing.length} approved vendors — assigning products to them.`);
+    console.log(`[VENDORS] Found ${existing.length} approved vendors — assigning products to them.`);
     return existing.map((v) => v._id as mongoose.Types.ObjectId);
   }
 
-  console.warn('⚠️   No approved vendors found in DB.');
+  console.warn('[WARN] No approved vendors found in DB.');
   console.warn('    Run `npm run seed` first to create demo vendors, then re-run this script.');
   process.exit(1);
 }
@@ -383,16 +383,16 @@ async function importFlipkart(): Promise<void> {
   console.log('║   BadaVyapar — Flipkart Dataset Importer                    ║');
   console.log('╚══════════════════════════════════════════════════════════════╝');
   console.log('');
-  console.log(`📄  Source file : ${CSV_FILE}`);
-  console.log(`🔢  Import limit: ${IMPORT_LIMIT}`);
-  console.log(`🗑️   Clear first : ${CLEAR_FIRST}`);
-  console.log(`👁️   Dry run     : ${DRY_RUN}`);
+  console.log(`[CONFIG] Source file : ${CSV_FILE}`);
+  console.log(`[CONFIG] Import limit: ${IMPORT_LIMIT}`);
+  console.log(`[CONFIG] Clear first : ${CLEAR_FIRST}`);
+  console.log(`[CONFIG] Dry run     : ${DRY_RUN}`);
   console.log('');
 
   // Resolve file path
   const csvPath = path.resolve(CSV_FILE!);
   if (!fs.existsSync(csvPath)) {
-    console.error(`❌  File not found: ${csvPath}`);
+    console.error(`[ERROR] File not found: ${csvPath}`);
     process.exit(1);
   }
 
@@ -403,7 +403,7 @@ async function importFlipkart(): Promise<void> {
   // Optional: wipe products
   if (CLEAR_FIRST && !DRY_RUN) {
     await Product.deleteMany({});
-    console.log('🧹  Cleared all existing products.');
+    console.log('[CLEAN] Cleared all existing products.');
   }
 
   // Ensure categories and vendors
@@ -435,7 +435,7 @@ async function importFlipkart(): Promise<void> {
       .on('error', reject);
   });
 
-  console.log(`✅  Parsed ${records.length.toLocaleString()} rows from CSV.`);
+  console.log(`[OK] Parsed ${records.length.toLocaleString()} rows from CSV.`);
 
   // ── Filter & map rows ──────────────────────────────────────────────────────
   let imported = 0;
@@ -562,7 +562,7 @@ async function importFlipkart(): Promise<void> {
     if (batch.length >= 50) {
       try {
         await Product.insertMany(batch, { ordered: false });
-        process.stdout.write(`\r  💾  Saved ${imported} / ${IMPORT_LIMIT} products...`);
+        process.stdout.write(`\r  [SAVE] Saved ${imported} / ${IMPORT_LIMIT} products...`);
       } catch (err: any) {
         // Some may fail on duplicate slugs — that's OK
         errors += err?.writeErrors?.length || 1;
@@ -583,25 +583,25 @@ async function importFlipkart(): Promise<void> {
   console.log('');
   console.log('');
   console.log('══════════════════════════════════════════════════════════════');
-  console.log(`  ✅  Import complete!`);
-  console.log(`  📦  Products saved   : ${imported - errors}`);
-  console.log(`  ⏭️   Skipped (invalid): ${skipped}`);
-  console.log(`  ⚠️   Errors (dupes)  : ${errors}`);
+  console.log(`  [SUCCESS] Import complete!`);
+  console.log(`  [COUNT]   Products saved   : ${imported - errors}`);
+  console.log(`  [SKIP]    Skipped (invalid): ${skipped}`);
+  console.log(`  [WARN]    Errors (dupes)  : ${errors}`);
   if (DRY_RUN) {
-    console.log(`  👁️   DRY RUN — nothing was written to the database.`);
+    console.log(`  [INFO]    DRY RUN — nothing was written to the database.`);
   }
   console.log('══════════════════════════════════════════════════════════════');
   console.log('');
 
   if (!DRY_RUN) {
-    console.log('💡  Run `npm run reindex` to sync Elasticsearch search index.');
+    console.log('[INFO] Run `npm run reindex` to sync Elasticsearch search index.');
     console.log('');
     await mongoose.disconnect();
   }
 }
 
 importFlipkart().catch((err) => {
-  console.error('❌  Import failed:', err.message);
+  console.error('[ERROR] Import failed:', err.message);
   process.exit(1);
 });
 

@@ -85,7 +85,6 @@ export default function ProductDetailPage() {
     try {
       await addItem(product._id, 1);
       toast.success(`Added ${product.title} (Size: ${selectedSize}) to Bag!`, {
-        icon: '🛍️',
         style: {
           border: '1px solid #FF3F6C',
           color: '#282C3F',
@@ -249,7 +248,7 @@ export default function ProductDetailPage() {
               <span className="font-bold text-xs text-[#282C3F]">
                 {ratingAvg > 0 ? ratingAvg.toFixed(1) : '4.3'}
               </span>
-              <span className="text-amber-500 text-xs">★</span>
+              <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
               <span className="text-gray-300 text-xs">|</span>
               <span className="text-xs text-[#535766]">
                 {ratingCount > 0 ? `${ratingCount} Ratings` : '2.4k Ratings'}

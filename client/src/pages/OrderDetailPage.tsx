@@ -14,6 +14,7 @@ import {
   ExternalLink,
   CreditCard,
   Download,
+  Check,
 } from 'lucide-react';
 
 const FULFILLMENT_STEPS = ['PLACED', 'PACKED', 'SHIPPED', 'DELIVERED'];
@@ -243,7 +244,7 @@ export default function OrderDetailPage() {
                                 : 'bg-white border-gray-300 text-gray-400'
                             } ${isCurrent ? 'ring-4 ring-amber-100' : ''}`}
                           >
-                            {isComplete ? '✓' : sIdx + 1}
+                            {isComplete ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : sIdx + 1}
                           </div>
                           <span
                             className={`text-[11px] font-semibold mt-1.5 ${

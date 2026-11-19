@@ -5,7 +5,7 @@ import Button from '../components/ui/Button';
 import { useWishlist } from '../hooks/useWishlist';
 import useCart from '../hooks/useCart';
 import { formatPrice } from '../lib/utils';
-import { X, Heart, ShoppingBag, ArrowRight } from 'lucide-react';
+import { X, Heart, ShoppingBag } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function WishlistPage() {
@@ -17,7 +17,6 @@ export default function WishlistPage() {
       await addItem(productId, 1);
       removeFromWishlist(productId);
       toast.success('Moved to Bag!', {
-        icon: '🛍️',
         style: {
           border: '1px solid #FF3F6C',
           color: '#282C3F',

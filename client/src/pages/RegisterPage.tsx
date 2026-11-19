@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
+import { ShoppingBag, Store } from 'lucide-react';
 
 const registerSchema = z
   .object({
@@ -111,7 +112,10 @@ export default function RegisterPage() {
                     className="sr-only"
                     {...register('role')}
                   />
-                  🛍️ Shop
+                  <span className="flex items-center justify-center space-x-1.5">
+                    <ShoppingBag className="w-4 h-4 text-[#FF3F6C]" />
+                    <span>Shop (Customer)</span>
+                  </span>
                 </label>
                 <label
                   className={`border rounded-lg p-3 text-center cursor-pointer transition text-sm font-medium ${
@@ -126,7 +130,10 @@ export default function RegisterPage() {
                     className="sr-only"
                     {...register('role')}
                   />
-                  🏪 Sell
+                  <span className="flex items-center justify-center space-x-1.5">
+                    <Store className="w-4 h-4 text-amber-600" />
+                    <span>Sell (Vendor)</span>
+                  </span>
                 </label>
               </div>
             </div>

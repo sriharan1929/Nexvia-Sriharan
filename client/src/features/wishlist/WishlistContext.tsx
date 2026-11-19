@@ -55,7 +55,6 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     setItems((prev) => {
       if (prev.some((i) => i.productId === item.productId)) return prev;
       toast.success('Added to Wishlist', {
-        icon: '❤️',
         style: {
           border: '1px solid #FF3F6C',
           padding: '12px 16px',
@@ -71,7 +70,6 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   const removeFromWishlist = (productId: string) => {
     setItems((prev) => prev.filter((i) => i.productId !== productId));
     toast('Removed from Wishlist', {
-      icon: '🤍',
       style: {
         border: '1px solid #E9E9ED',
         padding: '12px 16px',

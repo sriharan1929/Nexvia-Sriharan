@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useWishlist } from '../hooks/useWishlist';
 import { formatPrice } from '../lib/utils';
 import type { Product } from '../types';
-import { Heart } from 'lucide-react';
+import { Heart, Star } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product;
@@ -66,7 +66,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         {product.ratingSummary && product.ratingSummary.count > 0 && (
           <div className="absolute bottom-2.5 left-2.5 bg-white/90 px-2 py-0.5 rounded-sm text-[10px] font-bold text-[#282C3F] flex items-center space-x-1 shadow-sm">
             <span>{product.ratingSummary.average.toFixed(1)}</span>
-            <span className="text-amber-500">★</span>
+            <Star className="w-2.5 h-2.5 fill-amber-500 text-amber-500" />
             <span className="text-gray-300">|</span>
             <span className="text-gray-500">{product.ratingSummary.count}</span>
           </div>
