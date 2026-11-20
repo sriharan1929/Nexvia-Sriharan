@@ -8,7 +8,7 @@ const env = {
   PORT: parseInt(process.env.PORT || '5000', 10),
 
   // MongoDB
-  MONGODB_URI: process.env.MONGODB_URI || 'mongodb://localhost:27017/badavyapar',
+  MONGODB_URI: process.env.MONGODB_URI || 'mongodb://localhost:27017/marketzone',
 
   // JWT
   JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET || 'dev-access-secret-change-me',
@@ -26,10 +26,10 @@ const env = {
   AWS_REGION: process.env.AWS_REGION || 'ap-south-1',
   AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID || '',
   AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY || '',
-  AWS_S3_BUCKET: process.env.AWS_S3_BUCKET || 'badavyapar-uploads',
+  AWS_S3_BUCKET: process.env.AWS_S3_BUCKET || 'marketzone-uploads',
 
   // Razorpay
-  RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID || 'rzp_test_mock_badavyapar',
+  RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID || 'rzp_test_mock_marketzone',
   RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET || 'dev-razorpay-key-secret-12345',
   RAZORPAY_WEBHOOK_SECRET: process.env.RAZORPAY_WEBHOOK_SECRET || 'dev-razorpay-webhook-secret-12345',
 

@@ -33,7 +33,7 @@ export default function AdminVendorsPage() {
   }, [statusFilter]);
 
   const handleApprove = async (vendorId: string) => {
-    if (!confirm('Approve this seller to start listing products on BadaVyapar?')) return;
+    if (!confirm('Approve this seller to start listing products on Market Zone?')) return;
     try {
       await api.patch(`/admin/vendors/${vendorId}/status`, {
         status: 'APPROVED',

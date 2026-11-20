@@ -243,7 +243,7 @@ const CURATED_FASHION_ITEMS = [
   },
 ];
 
-// Map DummyJSON category strings to our BadaVyapar category slugs
+// Map DummyJSON category strings to our Market Zone category slugs
 const DUMMY_CATEGORY_MAP: Record<string, string> = {
   'beauty': 'beauty-skincare',
   'fragrances': 'beauty-fragrances',
@@ -374,7 +374,7 @@ async function loadProducts() {
     const res = await fetch('https://dummyjson.com/products?limit=194');
     const data: any = await res.json();
     const externalProducts = data.products || [];
-    console.log(`[DATA] Received ${externalProducts.length} items from API. Formatting for BadaVyapar...`);
+    console.log(`[DATA] Received ${externalProducts.length} items from API. Formatting for Market Zone...`);
 
     for (const p of externalProducts) {
       const vendorId = vendorIds[count % vendorIds.length];

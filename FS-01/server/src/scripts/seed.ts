@@ -10,7 +10,7 @@ import { indexProduct } from '../services/search.service';
 import { UserRole, ApprovalStatus, ProductStatus } from '../types';
 
 async function seedDatabase() {
-  console.log('[START] Starting BadaVyapar marketplace seed process...');
+  console.log('[START] Starting Market Zone marketplace seed process...');
   await connectDB();
 
   // 1. Clear existing sample collections
@@ -25,11 +25,11 @@ async function seedDatabase() {
 
   // 2. Create Users
   console.log('[USERS] Seeding core platform users...');
-  const commonPasswordHash = await hashPassword('BadaVyapar@123');
+  const commonPasswordHash = await hashPassword('MarketZone@123');
 
   const adminUser = await User.create({
     name: 'Marketplace Administrator',
-    email: 'admin@badavyapar.com',
+    email: 'admin@marketzone.com',
     passwordHash: commonPasswordHash,
     roles: [UserRole.ADMIN, UserRole.CUSTOMER],
     accountStatus: 'ACTIVE',
@@ -37,7 +37,7 @@ async function seedDatabase() {
 
   const vendorUser1 = await User.create({
     name: 'Rajesh Sharma',
-    email: 'seller.tech@badavyapar.com',
+    email: 'seller.tech@marketzone.com',
     passwordHash: commonPasswordHash,
     roles: [UserRole.VENDOR, UserRole.CUSTOMER],
     accountStatus: 'ACTIVE',
@@ -45,7 +45,7 @@ async function seedDatabase() {
 
   const vendorUser2 = await User.create({
     name: 'Ananya Iyer',
-    email: 'seller.craft@badavyapar.com',
+    email: 'seller.craft@marketzone.com',
     passwordHash: commonPasswordHash,
     roles: [UserRole.VENDOR, UserRole.CUSTOMER],
     accountStatus: 'ACTIVE',
@@ -53,7 +53,7 @@ async function seedDatabase() {
 
   const vendorUserPending = await User.create({
     name: 'Vikram Malhotra',
-    email: 'seller.urban@badavyapar.com',
+    email: 'seller.urban@marketzone.com',
     passwordHash: commonPasswordHash,
     roles: [UserRole.VENDOR, UserRole.CUSTOMER],
     accountStatus: 'ACTIVE',
@@ -61,7 +61,7 @@ async function seedDatabase() {
 
   const customerUser = await User.create({
     name: 'Priya Verma',
-    email: 'customer@badavyapar.com',
+    email: 'customer@marketzone.com',
     passwordHash: commonPasswordHash,
     roles: [UserRole.CUSTOMER],
     accountStatus: 'ACTIVE',
@@ -302,14 +302,14 @@ async function seedDatabase() {
   ]);
 
   console.log('\n======================================================');
-  console.log('[SUCCESS] BadaVyapar Marketplace Seed Complete!');
+  console.log('[SUCCESS] Market Zone Marketplace Seed Complete!');
   console.log('======================================================');
-  console.log('Demo Credentials (All accounts use password: BadaVyapar@123):');
-  console.log('  [ADMIN]    admin@badavyapar.com');
-  console.log('  [VENDOR 1] seller.tech@badavyapar.com (TechNexus Electronics)');
-  console.log('  [VENDOR 2] seller.craft@badavyapar.com (Vedic Craft Handlooms)');
-  console.log('  [PENDING]  seller.urban@badavyapar.com (Urban Vogue Studio)');
-  console.log('  [CUSTOMER] customer@badavyapar.com (Priya Verma)');
+  console.log('Demo Credentials (All accounts use password: MarketZone@123):');
+  console.log('  [ADMIN]    admin@marketzone.com');
+  console.log('  [VENDOR 1] seller.tech@marketzone.com (TechNexus Electronics)');
+  console.log('  [VENDOR 2] seller.craft@marketzone.com (Vedic Craft Handlooms)');
+  console.log('  [PENDING]  seller.urban@marketzone.com (Urban Vogue Studio)');
+  console.log('  [CUSTOMER] customer@marketzone.com (Priya Verma)');
   console.log('------------------------------------------------------');
   console.log('Coupons: SAVE10 (10% off), FLAT200 (₹200 off), WELCOME50 (₹50 off)');
   console.log('======================================================\n');

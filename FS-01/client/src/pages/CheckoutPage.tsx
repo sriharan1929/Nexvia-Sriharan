@@ -175,7 +175,7 @@ export default function CheckoutPage() {
         key: keyId,
         amount: amountPaise,
         currency: 'INR',
-        name: 'BadaVyapar Fashion',
+        name: 'Market Zone Fashion',
         description: `Order #${order.orderNumber}`,
         order_id: razorpayOrderId.startsWith('order_mock') ? undefined : razorpayOrderId,
         handler: async (response: any) => {
@@ -228,9 +228,9 @@ export default function CheckoutPage() {
           <div className="max-w-6xl mx-auto flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-2">
               <div className="w-8 h-8 rounded-sm bg-gradient-to-tr from-[#FF3F6C] to-[#FF905A] flex items-center justify-center shadow-sm">
-                <span className="text-white font-black text-lg tracking-tight">B</span>
+                <span className="text-white font-black text-lg tracking-tight">M</span>
               </div>
-              <span className="font-black text-lg tracking-wider text-[#282C3F]">BADAVYAPAR</span>
+              <span className="font-black text-lg tracking-wider text-[#282C3F]">MARKET ZONE</span>
             </Link>
           </div>
         </header>
@@ -257,9 +257,9 @@ export default function CheckoutPage() {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <div className="w-8 h-8 rounded-sm bg-gradient-to-tr from-[#FF3F6C] to-[#FF905A] flex items-center justify-center shadow-sm">
-              <span className="text-white font-black text-lg tracking-tight">B</span>
+              <span className="text-white font-black text-lg tracking-tight">M</span>
             </div>
-            <span className="font-black text-lg tracking-wider text-[#282C3F] hidden sm:inline">BADAVYAPAR</span>
+            <span className="font-black text-lg tracking-wider text-[#282C3F] hidden sm:inline">MARKET ZONE</span>
           </Link>
 
           {/* Stepped Progress Bar */}

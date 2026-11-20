@@ -1,4 +1,4 @@
-export const APP_NAME = 'BadaVyapar';
+export const APP_NAME = 'Market Zone';
 export const CURRENCY_SYMBOL = '₹';
 
 export const USER_ROLES = {

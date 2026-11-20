@@ -33,11 +33,11 @@ export const generateInvoicePDF = async (orderId: string, res: Response) => {
     .fillColor('#d97706') // Amber primary
     .fontSize(22)
     .font('Helvetica-Bold')
-    .text('BadaVyapar', 40, 40)
+    .text('Market Zone', 40, 40)
     .fillColor('#6b7280')
     .fontSize(10)
     .font('Helvetica')
-    .text('Multi-Vendor E-Commerce Platform · badavyapar.com', 40, 68);
+    .text('Multi-Vendor E-Commerce Platform · marketzone.com', 40, 68);
 
   doc
     .fillColor('#111827')
@@ -219,7 +219,7 @@ export const generateInvoicePDF = async (orderId: string, res: Response) => {
     .fontSize(8)
     .font('Helvetica')
     .text(
-      'This document is a computer-generated tax invoice issued by BadaVyapar on behalf of participating sellers. No physical signature is required.',
+      'This document is a computer-generated tax invoice issued by Market Zone on behalf of participating sellers. No physical signature is required.',
       40,
       760,
       { align: 'center', width: 515 }

@@ -81,14 +81,14 @@ export default function Navbar() {
           <div className="flex items-center space-x-8 h-full">
             <Link to="/" className="flex items-center space-x-2 group">
               <div className="w-10 h-10 rounded-sm bg-gradient-to-tr from-[#FF3F6C] via-[#FF527B] to-[#FF905A] flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
-                <span className="text-white font-black text-xl tracking-tighter">BV</span>
+                <span className="text-white font-black text-xl tracking-tighter">MZ</span>
               </div>
               <div className="flex flex-col">
                 <span className="text-xl font-black tracking-tight text-[#282C3F]">
-                  Bada<span className="text-[#FF3F6C]">Vyapar</span>
+                  Market<span className="text-[#FF3F6C]">Zone</span>
                 </span>
                 <span className="text-[9px] font-bold tracking-widest text-[#535766] uppercase -mt-1">
-                  Fashion & Market
+                  Fashion & Lifestyle
                 </span>
               </div>
             </Link>
@@ -243,7 +243,7 @@ export default function Navbar() {
                             to="/vendor/apply"
                             className="block px-5 py-2 text-amber-700 hover:bg-[#F5F5F6] transition"
                           >
-                            Sell on BadaVyapar
+                            Sell on Market Zone
                           </Link>
                         )}
 
@@ -298,7 +298,7 @@ export default function Navbar() {
                           to="/vendor/apply"
                           className="block px-5 py-2 text-amber-700 font-semibold hover:bg-[#F5F5F6] transition"
                         >
-                          Sell on BadaVyapar
+                          Sell on Market Zone
                         </Link>
                       </div>
                     </div>

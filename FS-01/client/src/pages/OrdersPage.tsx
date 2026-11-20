@@ -47,7 +47,7 @@ export default function OrdersPage() {
           <div className="bg-white rounded-2xl p-12 text-center border border-gray-100 shadow-sm">
             <Package className="w-12 h-12 text-gray-400 mx-auto mb-3" />
             <h2 className="text-lg font-bold text-gray-900 mb-1">No orders yet</h2>
-            <p className="text-sm text-gray-500 mb-6">You have not placed any orders on BadaVyapar yet.</p>
+            <p className="text-sm text-gray-500 mb-6">You have not placed any orders on Market Zone yet.</p>
             <Link to="/products">
               <Button variant="primary">Start Shopping</Button>
             </Link>

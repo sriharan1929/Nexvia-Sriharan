@@ -39,12 +39,12 @@ export default function Footer() {
               </li>
               <li>
                 <Link to="/products?tag=trending" className="hover:text-[#282C3F] transition">
-                  BadaVyapar Studio
+                  Market Zone Studio
                 </Link>
               </li>
               <li>
                 <Link to="/vendor/apply" className="hover:text-[#FF3F6C] font-semibold transition">
-                  Sell On BadaVyapar
+                  Sell On Market Zone
                 </Link>
               </li>
             </ul>
@@ -119,7 +119,7 @@ export default function Footer() {
               <div>
                 <p className="font-bold text-xs text-[#282C3F]">100% ORIGINAL guarantee</p>
                 <p className="text-gray-500 text-[11px] mt-0.5">
-                  for all products from verified merchants on badavyapar.com
+                  for all products from verified merchants on marketzone.com
                 </p>
               </div>
             </div>
@@ -147,8 +147,8 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="pt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between text-[#94969F] text-[11px]">
-          <p>© 2026 www.badavyapar.com. All rights reserved.</p>
-          <p className="mt-2 sm:mt-0 font-medium">BadaVyapar Multi-Vendor Enterprise Edition</p>
+          <p>© 2026 www.marketzone.com. All rights reserved.</p>
+          <p className="mt-2 sm:mt-0 font-medium">Market Zone Multi-Vendor Enterprise Edition</p>
         </div>
       </div>
     </footer>

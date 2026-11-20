@@ -1,6 +1,6 @@
 # Application Screenshots & Verification Showcase
 
-This directory contains visual documentation and test verification for the **BadaVyapar (Myntra-Clone)** full-stack multi-vendor marketplace platform.
+This directory contains visual documentation and test verification for the **Market Zone (Myntra-Clone)** full-stack multi-vendor marketplace platform.
 
 ---
 
@@ -44,3 +44,4 @@ Test Files  8 passed (8)
 - **Color Palette**: Myntra Pink (`#FF3F6C`), Dark (`#282C3F`), Discount Green (`#03A685`), Soft White (`#F5F5F6`)
 - **Backend**: Node.js, Express, TypeScript, Mongoose ODM, MongoDB Atlas Cloud
 - **State & Data**: Redis shopping carts, Elasticsearch search synchronization, Razorpay Route multi-vendor split ledger
+

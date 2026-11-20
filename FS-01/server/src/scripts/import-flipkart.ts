@@ -1,7 +1,7 @@
 /**
  * import-flipkart.ts
  * ─────────────────────────────────────────────────────────────────────────────
- * Imports Flipkart product CSV data into the BadaVyapar MongoDB database.
+ * Imports Flipkart product CSV data into the Market Zone MongoDB database.
  *
  * USAGE:
  *   npx ts-node-dev src/scripts/import-flipkart.ts --file ./data/flipkart_com-ecommerce_sample.csv
@@ -16,7 +16,7 @@
  *   https://www.kaggle.com/datasets/PromptCloudHQ/flipkart-products
  *   File: flipkart_com-ecommerce_sample.csv
  *
- * COLUMN MAP (Flipkart CSV → BadaVyapar schema):
+ * COLUMN MAP (Flipkart CSV → Market Zone schema):
  *   product_name       → title
  *   description        → description
  *   retail_price       → compareAtPricePaise  (MRP)
@@ -62,7 +62,7 @@ if (!CSV_FILE) {
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
-// Category mapping: Flipkart category tree → BadaVyapar slug
+// Category mapping: Flipkart category tree → Market Zone slug
 // ──────────────────────────────────────────────────────────────────────────────
 
 /**
@@ -276,7 +276,7 @@ interface FlipkartRow {
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
-// Ensure our BadaVyapar categories exist
+// Ensure our Market Zone categories exist
 // ──────────────────────────────────────────────────────────────────────────────
 
 const ALL_CATEGORIES = [
@@ -380,7 +380,7 @@ async function ensureVendors(): Promise<mongoose.Types.ObjectId[]> {
 async function importFlipkart(): Promise<void> {
   console.log('');
   console.log('╔══════════════════════════════════════════════════════════════╗');
-  console.log('║   BadaVyapar — Flipkart Dataset Importer                    ║');
+  console.log('║   Market Zone — Flipkart Dataset Importer                   ║');
   console.log('╚══════════════════════════════════════════════════════════════╝');
   console.log('');
   console.log(`[CONFIG] Source file : ${CSV_FILE}`);
@@ -498,7 +498,7 @@ async function importFlipkart(): Promise<void> {
     const description =
       rawDesc.length > 20
         ? rawDesc.slice(0, 1000)
-        : `${title} — quality product available on BadaVyapar Marketplace. Genuine product with manufacturer warranty.`;
+        : `${title} — quality product available on Market Zone Marketplace. Genuine product with manufacturer warranty.`;
 
     // Image
     let imageUrl = (row.image || '').trim();

@@ -65,7 +65,7 @@ export default function VendorApplyPage() {
               Seller Onboarding
             </span>
             <h1 className="text-2xl font-black text-gray-900 mt-2">
-              Apply to Sell on BadaVyapar
+              Apply to Sell on Market Zone
             </h1>
             <p className="text-sm text-gray-600 mt-1">
               Join hundreds of independent Indian sellers and reach customers nationwide.

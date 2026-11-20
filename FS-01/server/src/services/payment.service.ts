@@ -26,7 +26,7 @@ const razorpay = isLiveConfigured
   : null;
 
 /**
- * Creates or retrieves a Razorpay Order for a pending BadaVyapar checkout.
+ * Creates or retrieves a Razorpay Order for a pending Market Zone checkout.
  */
 export const createGatewayOrder = async (
   orderId: string,
@@ -65,7 +65,7 @@ export const createGatewayOrder = async (
     razorpayOrderId,
     amountPaise,
     currency: 'INR',
-    keyId: env.RAZORPAY_KEY_ID || 'rzp_test_mock_badavyapar',
+    keyId: env.RAZORPAY_KEY_ID || 'rzp_test_mock_marketzone',
   };
 };
 

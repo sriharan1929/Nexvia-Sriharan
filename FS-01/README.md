@@ -1,4 +1,4 @@
-# 🏪 BadaVyapar (badavyapar.com) — Multi-Vendor E-Commerce Marketplace
+# 🏪 Market Zone (marketzone.com) — Multi-Vendor E-Commerce Marketplace
 
 > A production-ready multi-vendor e-commerce platform engineered with React (TypeScript), Node.js (Express + TypeScript), MongoDB, Elasticsearch, Redis, AWS S3, and Razorpay Route.
 
@@ -57,7 +57,7 @@ Market_Place/
 
 ### 1. Prerequisites
 - Node.js >= 18
-- MongoDB instance (local `mongodb://localhost:27017/badavyapar` or MongoDB Atlas)
+- MongoDB instance (local `mongodb://localhost:27017/marketzone` or MongoDB Atlas)
 - Redis instance (local `redis://localhost:6379` or Upstash; automatic in-memory fallback included)
 - Elasticsearch cluster (optional for local dev; automatic MongoDB regex search fallback included)
 
@@ -89,15 +89,15 @@ Storefront: `http://localhost:5173`
 
 ## 🔑 Demo Credentials
 
-All seeded demo accounts share the password: `BadaVyapar@123`
+All seeded demo accounts share the password: `MarketZone@123`
 
 | Role | Email | Description |
 |---|---|---|
-| **Platform Admin** | `admin@badavyapar.com` | Moderation console, vendor approvals, marketplace GMV analytics & coupons |
-| **Vendor 1 (Approved)** | `seller.tech@badavyapar.com` | TechNexus Electronics — Keyboard, mouse, USB-C dock listings & fulfillment |
-| **Vendor 2 (Approved)** | `seller.craft@badavyapar.com` | Vedic Craft Handlooms — Pashmina shawls, cotton bedspreads & dinner sets |
-| **Vendor (Pending)** | `seller.urban@badavyapar.com` | Urban Vogue Studio — Under-review seller application |
-| **Customer** | `customer@badavyapar.com` | Priya Verma — Pre-configured buyer account |
+| **Platform Admin** | `admin@marketzone.com` | Moderation console, vendor approvals, marketplace GMV analytics & coupons |
+| **Vendor 1 (Approved)** | `seller.tech@marketzone.com` | TechNexus Electronics — Keyboard, mouse, USB-C dock listings & fulfillment |
+| **Vendor 2 (Approved)** | `seller.craft@marketzone.com` | Vedic Craft Handlooms — Pashmina shawls, cotton bedspreads & dinner sets |
+| **Vendor (Pending)** | `seller.urban@marketzone.com` | Urban Vogue Studio — Under-review seller application |
+| **Customer** | `customer@marketzone.com` | Priya Verma — Pre-configured buyer account |
 
 ### Active Demo Promo Coupons
 - `SAVE10`: 10% discount on orders of ₹1,000+ (capped at ₹500)
