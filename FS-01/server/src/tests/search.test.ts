@@ -17,7 +17,6 @@ describe('Elasticsearch Query DSL Builder', () => {
     expect(multiMatch.fields).toContain('description');
     expect(multiMatch.fuzziness).toBe('AUTO');
 
-    // Status filter must always be ACTIVE
     const statusFilter = query.query.bool.filter.find(
       (f: any) => f.term && f.term.status === ProductStatus.ACTIVE
     );
@@ -44,8 +43,8 @@ describe('Elasticsearch Query DSL Builder', () => {
 
   it('should add integer paise price range filters', () => {
     const query = buildElasticQuery({
-      minPrice: 50000, // ₹500.00
-      maxPrice: 300000, // ₹3,000.00
+      minPrice: 50000,
+      maxPrice: 300000,
     });
 
     const priceFilter = query.query.bool.filter.find((f: any) => f.range?.pricePaise);
@@ -71,8 +70,7 @@ describe('Elasticsearch Query DSL Builder', () => {
       limit: 15,
     });
 
-    expect(page3Query.from).toBe(30); // (3 - 1) * 15
+    expect(page3Query.from).toBe(30);
     expect(page3Query.size).toBe(15);
   });
 });
-

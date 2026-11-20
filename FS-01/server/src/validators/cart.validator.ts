@@ -9,4 +9,3 @@ export const updateCartItemSchema = z.object({
 });
 
 export type UpdateCartItemInput = z.infer<typeof updateCartItemSchema>;
-

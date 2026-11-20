@@ -21,7 +21,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div className="group border border-[#E9E9ED] rounded-sm bg-white overflow-hidden flex flex-col hover:shadow-lg transition-all relative">
-      {/* Wishlist Heart Toggle */}
+
       <button
         onClick={(e) => {
           e.preventDefault();
@@ -108,4 +108,3 @@ export default function ProductCard({ product }: ProductCardProps) {
     </div>
   );
 }
-

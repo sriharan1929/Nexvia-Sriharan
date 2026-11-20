@@ -24,14 +24,14 @@ This directory contains visual documentation and test verification for the **Mar
 All **55 unit and integration tests** are implemented under `server/src/tests/` and pass with 100% green status:
 
 ```text
-✓ src/tests/failure_scenarios.test.ts   (7 tests)
-✓ src/tests/marketplace_extras.test.ts    (5 tests)
-✓ src/tests/order_lifecycle.test.ts     (8 tests)
-✓ src/tests/catalog_vendor.test.ts      (8 tests)
-✓ src/tests/cart.test.ts                (7 tests)
-✓ src/tests/search.test.ts              (6 tests)
-✓ src/tests/payment.test.ts             (7 tests)
-✓ src/tests/auth.test.ts                (7 tests)
+[PASS] src/tests/failure_scenarios.test.ts   (7 tests)
+[PASS] src/tests/marketplace_extras.test.ts    (5 tests)
+[PASS] src/tests/order_lifecycle.test.ts     (8 tests)
+[PASS] src/tests/catalog_vendor.test.ts      (8 tests)
+[PASS] src/tests/cart.test.ts                (7 tests)
+[PASS] src/tests/search.test.ts              (6 tests)
+[PASS] src/tests/payment.test.ts             (7 tests)
+[PASS] src/tests/auth.test.ts                (7 tests)
 
 Test Files  8 passed (8)
      Tests  55 passed (55)

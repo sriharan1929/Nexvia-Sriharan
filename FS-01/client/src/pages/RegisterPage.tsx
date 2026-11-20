@@ -93,7 +93,7 @@ export default function RegisterPage() {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow-sm sm:rounded-xl sm:px-10 border border-gray-100">
           <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
-            {/* Account Type Selection */}
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 I want to:
@@ -190,4 +190,3 @@ export default function RegisterPage() {
     </div>
   );
 }
-

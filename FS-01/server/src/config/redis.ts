@@ -11,7 +11,7 @@ const connectRedis = (): Redis => {
     maxRetriesPerRequest: 1,
     connectTimeout: 1000,
     enableOfflineQueue: false,
-    lazyConnect: true, // Don't block startup if Redis is offline
+    lazyConnect: true,
     retryStrategy(times) {
       if (times > 1) return null;
       return 200;
@@ -27,7 +27,6 @@ const connectRedis = (): Redis => {
     isRedisAvailable = false;
   });
 
-  // Attempt non-blocking connection
   redis.connect().catch(() => {
     isRedisAvailable = false;
   });

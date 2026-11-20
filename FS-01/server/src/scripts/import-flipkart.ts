@@ -1,32 +1,3 @@
-/**
- * import-flipkart.ts
- * ─────────────────────────────────────────────────────────────────────────────
- * Imports Flipkart product CSV data into the Market Zone MongoDB database.
- *
- * USAGE:
- *   npx ts-node-dev src/scripts/import-flipkart.ts --file ./data/flipkart_com-ecommerce_sample.csv
- *
- * FLAGS:
- *   --file   <path>   Path to the Flipkart CSV file  (required)
- *   --limit  <n>      Max products to import         (default: 500)
- *   --clear           Wipe existing products first   (optional)
- *   --dry-run         Parse & preview without saving (optional)
- *
- * KAGGLE DATASET:
- *   https://www.kaggle.com/datasets/PromptCloudHQ/flipkart-products
- *   File: flipkart_com-ecommerce_sample.csv
- *
- * COLUMN MAP (Flipkart CSV → Market Zone schema):
- *   product_name       → title
- *   description        → description
- *   retail_price       → compareAtPricePaise  (MRP)
- *   discounted_price   → pricePaise           (selling price)
- *   product_category_tree → category mapping
- *   image              → images[0].url
- *   product_rating     → ratingSummary.average
- *   overall_rating     → ratingSummary.average (fallback)
- * ─────────────────────────────────────────────────────────────────────────────
- */
 
 import fs from 'fs';
 import path from 'path';
@@ -38,10 +9,6 @@ import Product from '../models/Product';
 import Category from '../models/Category';
 import VendorProfile from '../models/VendorProfile';
 import { ProductStatus, ApprovalStatus } from '../types';
-
-// ──────────────────────────────────────────────────────────────────────────────
-// Config
-// ──────────────────────────────────────────────────────────────────────────────
 
 const args = process.argv.slice(2);
 const getArg = (flag: string) => {
@@ -61,17 +28,8 @@ if (!CSV_FILE) {
   process.exit(1);
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
-// Category mapping: Flipkart category tree → Market Zone slug
-// ──────────────────────────────────────────────────────────────────────────────
-
-/**
- * Flipkart uses a hierarchical category string like:
- *   "Clothing >> Women's Clothing >> Tops, Tees & Shirts"
- * We extract the first meaningful segment and map to our category slugs.
- */
 const CATEGORY_MAP: Record<string, string> = {
-  // Men
+
   "men's clothing":        'men-tshirts',
   "men's shirts":          'men-shirts',
   "men's t-shirts":        'men-tshirts',
@@ -81,7 +39,6 @@ const CATEGORY_MAP: Record<string, string> = {
   "men's sports":          'men-sportswear',
   'men':                   'men-tshirts',
 
-  // Women
   "women's clothing":      'women-dresses',
   "women's tops":          'women-tops',
   "women's dresses":       'women-dresses',
@@ -92,13 +49,11 @@ const CATEGORY_MAP: Record<string, string> = {
   "women's accessories":   'women-accessories',
   'women':                 'women-dresses',
 
-  // Kids
   "boys' clothing":        'kids-boys',
   "girls' clothing":       'kids-girls',
   "kids' footwear":        'kids-footwear',
   'kids':                  'kids-boys',
 
-  // Electronics
   'mobiles':               'mobiles-accessories',
   'cameras':               'electronics',
   'computers':             'electronics',
@@ -106,34 +61,26 @@ const CATEGORY_MAP: Record<string, string> = {
   'laptops':               'electronics',
   'tablets':               'electronics',
 
-  // Home & Living
   'home décor':            'home-decor',
   'home & kitchen':        'home-kitchen',
   'furniture':             'home-decor',
   'bedding':               'home-kitchen',
 
-  // Beauty
   'beauty':                'beauty-skincare',
   "women's beauty":        'beauty-skincare',
   'health & beauty':       'beauty-skincare',
   'fragrances':            'beauty-fragrances',
 
-  // Sports
   'sports':                'sports-fitness',
   'fitness':               'sports-fitness',
   'outdoor':               'sports-fitness',
 
-  // Books
   'books':                 'books-stationery',
   'stationery':            'books-stationery',
 
-  // Default
   'default':               'men-tshirts',
 };
 
-/**
- * Returns our category slug from the Flipkart category_tree string.
- */
 function mapCategory(categoryTree: string): string {
   if (!categoryTree) return CATEGORY_MAP['default'];
   const parts = categoryTree
@@ -148,10 +95,6 @@ function mapCategory(categoryTree: string): string {
   }
   return CATEGORY_MAP['default'];
 }
-
-// ──────────────────────────────────────────────────────────────────────────────
-// Indian Fashion Brand Pool (injected when Flipkart brand is missing)
-// ──────────────────────────────────────────────────────────────────────────────
 
 const VENDOR_BRANDS = [
   'Roadster',
@@ -182,15 +125,11 @@ const VENDOR_BRANDS = [
 ];
 
 function pickBrand(title: string): string {
-  // Try to extract brand from title (usually first 1–2 words)
+
   const firstWords = title.split(' ').slice(0, 2).join(' ');
   if (firstWords.length > 2 && !/^\d/.test(firstWords)) return firstWords;
   return VENDOR_BRANDS[Math.floor(Math.random() * VENDOR_BRANDS.length)];
 }
-
-// ──────────────────────────────────────────────────────────────────────────────
-// Placeholder image fallback pools (by category)
-// ──────────────────────────────────────────────────────────────────────────────
 
 const PLACEHOLDER_IMAGES: Record<string, string[]> = {
   'men-tshirts': [
@@ -240,15 +179,11 @@ function getPlaceholderImage(categorySlug: string, seed: number): string {
   return pool[seed % pool.length];
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
-// Price helpers
-// ──────────────────────────────────────────────────────────────────────────────
-
 function parsePrice(raw: string | undefined): number {
   if (!raw) return 0;
   const cleaned = String(raw).replace(/[^0-9.]/g, '');
   const val = parseFloat(cleaned);
-  return isNaN(val) ? 0 : Math.round(val * 100); // → paise
+  return isNaN(val) ? 0 : Math.round(val * 100);
 }
 
 function parseRating(raw: string | undefined): number {
@@ -256,10 +191,6 @@ function parseRating(raw: string | undefined): number {
   const val = parseFloat(raw);
   return isNaN(val) ? 0 : Math.min(5, Math.max(0, val));
 }
-
-// ──────────────────────────────────────────────────────────────────────────────
-// Row interface (Flipkart CSV columns)
-// ──────────────────────────────────────────────────────────────────────────────
 
 interface FlipkartRow {
   uniq_id?: string;
@@ -275,41 +206,37 @@ interface FlipkartRow {
   pid?: string;
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
-// Ensure our Market Zone categories exist
-// ──────────────────────────────────────────────────────────────────────────────
-
 const ALL_CATEGORIES = [
-  // Men
+
   { name: 'Men T-Shirts',          slug: 'men-tshirts',          parent: 'men' },
   { name: 'Men Shirts',            slug: 'men-shirts',           parent: 'men' },
   { name: 'Men Jeans',             slug: 'men-jeans',            parent: 'men' },
   { name: 'Men Bottomwear',        slug: 'men-bottomwear',       parent: 'men' },
   { name: 'Men Footwear',          slug: 'men-footwear',         parent: 'men' },
   { name: 'Men Sportswear',        slug: 'men-sportswear',       parent: 'men' },
-  // Women
+
   { name: 'Women Dresses',         slug: 'women-dresses',        parent: 'women' },
   { name: 'Women Tops',            slug: 'women-tops',           parent: 'women' },
   { name: 'Women Ethnic Wear',     slug: 'women-ethnic',         parent: 'women' },
   { name: 'Women Footwear',        slug: 'women-footwear',       parent: 'women' },
   { name: 'Women Handbags',        slug: 'women-handbags',       parent: 'women' },
   { name: 'Women Accessories',     slug: 'women-accessories',    parent: 'women' },
-  // Kids
+
   { name: "Kids Boys' Wear",       slug: 'kids-boys',            parent: 'kids' },
   { name: "Kids Girls' Wear",      slug: 'kids-girls',           parent: 'kids' },
   { name: "Kids Footwear",         slug: 'kids-footwear',        parent: 'kids' },
-  // Electronics & Tech
+
   { name: 'Mobiles & Accessories', slug: 'mobiles-accessories',  parent: 'electronics-tech' },
   { name: 'Electronics',           slug: 'electronics',          parent: 'electronics-tech' },
-  // Home & Living
+
   { name: 'Home Decor',            slug: 'home-decor',           parent: 'home-living' },
   { name: 'Home & Kitchen',        slug: 'home-kitchen',         parent: 'home-living' },
-  // Beauty
+
   { name: 'Skincare',              slug: 'beauty-skincare',      parent: 'beauty' },
   { name: 'Fragrances',            slug: 'beauty-fragrances',    parent: 'beauty' },
-  // Sports
+
   { name: 'Sports & Fitness',      slug: 'sports-fitness',       parent: 'sports' },
-  // Books
+
   { name: 'Books & Stationery',    slug: 'books-stationery',     parent: 'books' },
 ];
 
@@ -327,7 +254,6 @@ const PARENT_CATEGORIES = [
 async function ensureCategories(): Promise<Map<string, mongoose.Types.ObjectId>> {
   const categoryIdMap = new Map<string, mongoose.Types.ObjectId>();
 
-  // Upsert parent categories
   for (const pc of PARENT_CATEGORIES) {
     const doc = await Category.findOneAndUpdate(
       { slug: pc.slug },
@@ -337,7 +263,6 @@ async function ensureCategories(): Promise<Map<string, mongoose.Types.ObjectId>>
     categoryIdMap.set(pc.slug, doc._id as mongoose.Types.ObjectId);
   }
 
-  // Upsert child categories
   for (const c of ALL_CATEGORIES) {
     const parentId = categoryIdMap.get(c.parent) || null;
     const doc = await Category.findOneAndUpdate(
@@ -416,7 +341,7 @@ async function importFlipkart(): Promise<void> {
   }
 
   // ── Parse CSV ──────────────────────────────────────────────────────────────
-  console.log('⏳  Parsing CSV...');
+  console.log('[INFO] Parsing CSV...');
 
   const records: FlipkartRow[] = await new Promise((resolve, reject) => {
     const rows: FlipkartRow[] = [];
@@ -604,4 +529,3 @@ importFlipkart().catch((err) => {
   console.error('[ERROR] Import failed:', err.message);
   process.exit(1);
 });
-

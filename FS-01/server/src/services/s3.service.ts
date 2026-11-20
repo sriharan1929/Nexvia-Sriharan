@@ -18,7 +18,6 @@ export const generatePresignedUploadUrl = async (
   const uniqueId = nanoid(12);
   const key = `products/${uniqueId}.${extension}`;
 
-  // If AWS S3 credentials are configured
   if (
     env.AWS_ACCESS_KEY_ID &&
     env.AWS_SECRET_ACCESS_KEY &&
@@ -41,7 +40,6 @@ export const generatePresignedUploadUrl = async (
     }
   }
 
-  // Development Fallback: Provide direct placeholder/mock URL
   const mockPublicUrl = `https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&auto=format&fit=crop&q=80`;
   return {
     uploadUrl: `http://localhost:${env.PORT}/api/v1/uploads/mock-upload?key=${key}`,

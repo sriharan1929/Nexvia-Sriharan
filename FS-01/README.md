@@ -1,10 +1,10 @@
-# 🏪 Market Zone (marketzone.com) — Multi-Vendor E-Commerce Marketplace
+# Market Zone (marketzone.com) — Multi-Vendor E-Commerce Marketplace
 
 > A production-ready multi-vendor e-commerce platform engineered with React (TypeScript), Node.js (Express + TypeScript), MongoDB, Elasticsearch, Redis, AWS S3, and Razorpay Route.
 
 ---
 
-## 🌟 Key Architecture & Highlights
+## Key Architecture & Highlights
 
 - **Multi-Vendor Checkout**: Customers purchase from multiple independent sellers in a single checkout session.
 - **Parent Order + SellerOrders Pattern**: Decentralized fulfillment; each vendor sees and updates only their items (`PLACED` → `PACKED` → `SHIPPED` → `DELIVERED`).
@@ -19,7 +19,7 @@
 
 ---
 
-## 🏗️ Repository Layout
+## Repository Layout
 
 ```
 Market_Place/
@@ -53,7 +53,7 @@ Market_Place/
 
 ---
 
-## 🚀 Quick Start Guide
+## Quick Start Guide
 
 ### 1. Prerequisites
 - Node.js >= 18
@@ -87,7 +87,7 @@ Storefront: `http://localhost:5173`
 
 ---
 
-## 🔑 Demo Credentials
+## Demo Credentials
 
 All seeded demo accounts share the password: `MarketZone@123`
 
@@ -106,7 +106,7 @@ All seeded demo accounts share the password: `MarketZone@123`
 
 ---
 
-## 🧪 Testing & Verification
+## Testing & Verification
 
 Run the comprehensive test suite (55 automated tests covering authentication, catalog, Elasticsearch DSL, Redis cart, multi-vendor order lifecycle, payment signatures, Route settlements, coupons, reviews, and 7 failure/concurrency scenarios):
 
@@ -121,7 +121,7 @@ npm --prefix client run build
 
 ---
 
-## 📚 Architectural Documentation
+## Architectural Documentation
 - [System Architecture](file:///e:/Market_Place/docs/architecture.md)
 - [Database Schema & ERD](file:///e:/Market_Place/docs/database-schema.md)
 - [REST API Specification](file:///e:/Market_Place/docs/api-specification.md)

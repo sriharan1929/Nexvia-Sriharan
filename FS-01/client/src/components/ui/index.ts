@@ -1,4 +1,4 @@
-// Central barrel export for all UI components
+
 export { default as Button, buttonVariants } from './Button';
 export type { ButtonProps } from './Button';
 

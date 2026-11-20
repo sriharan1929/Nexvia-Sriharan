@@ -13,7 +13,6 @@ import { updateCartItemSchema } from '../validators/cart.validator';
 
 const router = Router();
 
-// All cart routes require an authenticated user session
 router.use(authenticate);
 
 router.get('/', getCartController);
@@ -24,4 +23,3 @@ router.delete('/items/:productId', removeItemController);
 router.delete('/', clearCartController);
 
 export default router;
-

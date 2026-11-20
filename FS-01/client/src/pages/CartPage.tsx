@@ -15,6 +15,7 @@ import {
   ShieldCheck,
   RotateCcw,
   ArrowRight,
+  Info,
 } from 'lucide-react';
 
 export default function CartPage() {
@@ -23,7 +24,6 @@ export default function CartPage() {
   const { toggleWishlist } = useWishlist();
   const navigate = useNavigate();
 
-  // Coupon state
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discountPaise: number } | null>(null);
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
@@ -56,7 +56,7 @@ export default function CartPage() {
 
   const handleRemoveCoupon = () => {
     setAppliedCoupon(null);
-    toast('Coupon removed', { icon: 'ℹ️' });
+    toast('Coupon removed', { icon: <Info className="w-5 h-5 text-sky-500" /> });
   };
 
   const handleMoveToWishlist = (item: any) => {
@@ -86,7 +86,7 @@ export default function CartPage() {
       <Navbar />
 
       <main className="flex-1 max-w-[1200px] w-full mx-auto px-4 sm:px-8 py-8">
-        {/* Stepped Order Progress Bar */}
+
         <div className="flex items-center justify-between pb-6 border-b border-[#E9E9ED] mb-8">
           <div className="flex items-center space-x-2 text-xs font-bold tracking-wider uppercase">
             <span className="text-[#FF3F6C] border-b-2 border-[#FF3F6C] pb-1">1. BAG</span>
@@ -133,9 +133,9 @@ export default function CartPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* Left Column: Bag Items (7 cols) */}
+
             <div className="lg:col-span-7 space-y-4">
-              {/* Deliver to postal banner */}
+
               <div className="border border-[#E9E9ED] rounded-sm p-3.5 flex items-center justify-between text-xs bg-[#FAFBFC]">
                 <div>
                   <span className="text-[#535766]">Deliver to: </span>
@@ -146,7 +146,6 @@ export default function CartPage() {
                 </button>
               </div>
 
-              {/* Items List */}
               <div className="space-y-4">
                 {items.map((item) => {
                   const discount =
@@ -164,7 +163,7 @@ export default function CartPage() {
                       key={item.productId}
                       className="border border-[#E9E9ED] rounded-sm p-4 bg-white flex gap-4 relative"
                     >
-                      {/* Remove Button */}
+
                       <button
                         onClick={() => removeItem(item.productId)}
                         className="absolute top-3 right-3 text-[#535766] hover:text-[#282C3F] p-1"
@@ -173,7 +172,6 @@ export default function CartPage() {
                         <X className="w-4 h-4" />
                       </button>
 
-                      {/* 3:4 Image */}
                       <Link
                         to={`/products/${item.product.slug}`}
                         className="w-24 h-32 aspect-[3/4] bg-[#F5F5F6] rounded-sm overflow-hidden shrink-0"

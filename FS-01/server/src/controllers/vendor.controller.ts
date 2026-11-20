@@ -25,7 +25,6 @@ export const applyVendor = async (
       );
     }
 
-    // Generate unique slug
     let slug = slugify(storeName, { lower: true, strict: true });
     const slugExists = await VendorProfile.findOne({ slug });
     if (slugExists) {
@@ -303,4 +302,3 @@ export const deleteVendorProduct = async (
     next(error);
   }
 };
-

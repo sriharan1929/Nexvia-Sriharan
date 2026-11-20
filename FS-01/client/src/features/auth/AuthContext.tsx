@@ -35,7 +35,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // Helper to check user roles
   const hasRole = useCallback(
     (role: string): boolean => {
       if (!user || !user.roles) return false;
@@ -44,7 +43,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [user]
   );
 
-  // Initialize auth session on app mount
   useEffect(() => {
     let isMounted = true;
 
@@ -57,7 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setUser(res.data.data.user);
           }
         } catch {
-          // Token expired or invalid, try silent refresh
+
           try {
             const refreshRes = await api.post('/auth/refresh');
             const newToken = refreshRes.data?.data?.accessToken;

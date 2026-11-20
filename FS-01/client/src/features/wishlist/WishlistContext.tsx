@@ -118,4 +118,3 @@ export function useWishlist() {
 }
 
 export default WishlistContext;
-

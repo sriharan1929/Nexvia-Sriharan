@@ -12,14 +12,11 @@ import { authenticate } from '../middleware/auth';
 
 const router = Router();
 
-// Public catalog endpoints
 router.get('/products', getProducts);
 router.get('/products/:slug', getProductBySlug);
 router.get('/categories', getCategories);
 
-// Reviews
 router.get('/products/:id/reviews', getProductReviewsHandler);
 router.post('/products/:id/reviews', authenticate, createProductReviewHandler);
 
 export default router;
-

@@ -18,4 +18,3 @@ router.post('/preview', validate(checkoutPreviewSchema), previewCheckoutControll
 router.post('/session', validate(checkoutSessionSchema), createCheckoutSessionController);
 
 export default router;
-

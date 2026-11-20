@@ -7,10 +7,6 @@ import {
 } from '../services/coupon.service';
 import { getCart } from '../services/cart.service';
 
-/**
- * Validates a coupon code against current customer cart or provided subtotal.
- * POST /api/v1/coupons/validate
- */
 export const validateCouponHandler = async (
   req: AuthenticatedRequest,
   res: Response,
@@ -42,10 +38,6 @@ export const validateCouponHandler = async (
   }
 };
 
-/**
- * Admin creates a new promotional coupon.
- * POST /api/v1/admin/coupons
- */
 export const createAdminCouponHandler = async (
   req: AuthenticatedRequest,
   res: Response,
@@ -63,10 +55,6 @@ export const createAdminCouponHandler = async (
   }
 };
 
-/**
- * Admin lists all coupons.
- * GET /api/v1/admin/coupons
- */
 export const listAdminCouponsHandler = async (
   _req: AuthenticatedRequest,
   res: Response,
@@ -82,4 +70,3 @@ export const listAdminCouponsHandler = async (
     next(error);
   }
 };
-

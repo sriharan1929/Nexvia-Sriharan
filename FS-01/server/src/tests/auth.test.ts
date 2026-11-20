@@ -15,7 +15,7 @@ describe('Auth Service - Passwords & Tokens', () => {
     const hash = await hashPassword(rawPassword);
 
     expect(hash).not.toBe(rawPassword);
-    expect(hash).toMatch(/^\$2[aby]\$\d+\$/); // bcrypt hash prefix
+    expect(hash).toMatch(/^\$2[aby]\$\d+\$/);
 
     const isMatch = await bcrypt.compare(rawPassword, hash);
     expect(isMatch).toBe(true);
@@ -37,13 +37,11 @@ describe('Auth Service - Passwords & Tokens', () => {
     expect(refreshToken).toBeDefined();
     expect(jti).toContain('67339794bf3214567890abcd');
 
-    // Verify Access Token payload
     const decodedAccess = verifyAccessToken(accessToken);
     expect(decodedAccess.userId).toBe(user._id);
     expect(decodedAccess.email).toBe(user.email);
     expect(decodedAccess.roles).toContain(UserRole.VENDOR);
 
-    // Verify Refresh Token payload
     const decodedRefresh = verifyRefreshToken(refreshToken);
     expect(decodedRefresh.userId).toBe(user._id);
     expect(decodedRefresh.jti).toBe(jti);
@@ -78,7 +76,7 @@ describe('Auth Validation Schemas (Zod)', () => {
     const invalidData = {
       name: 'Ramesh Sharma',
       email: 'ramesh@example.com',
-      password: 'Pass1', // only 5 chars
+      password: 'Pass1',
     };
 
     const result = registerSchema.safeParse(invalidData);

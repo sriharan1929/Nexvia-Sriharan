@@ -48,4 +48,3 @@ export const updateVendorStatusSchema = z.object({
 export type ApplyVendorInput = z.infer<typeof applyVendorSchema>;
 export type UpdateVendorProfileInput = z.infer<typeof updateVendorProfileSchema>;
 export type UpdateVendorStatusInput = z.infer<typeof updateVendorStatusSchema>;
-

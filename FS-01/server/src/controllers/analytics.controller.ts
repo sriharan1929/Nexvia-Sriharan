@@ -6,23 +6,18 @@ import Product from '../models/Product';
 import VendorProfile from '../models/VendorProfile';
 import { PaymentStatus, ProductStatus, ApprovalStatus } from '../types';
 
-/**
- * Returns overall marketplace analytics and metrics for the Admin dashboard.
- * GET /api/v1/admin/analytics/overview
- */
 export const getAdminOverviewHandler = async (
   _req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    // 1. GMV & Total Paid Orders
+
     const paidOrders = await Order.find({ paymentStatus: PaymentStatus.PAID });
     const gmvPaise = paidOrders.reduce((sum, o) => sum + o.totalPaise, 0);
     const totalOrdersCount = await Order.countDocuments();
     const paidOrdersCount = paidOrders.length;
 
-    // 2. Platform Commission Earned
     const paidOrderIds = paidOrders.map((o) => o._id);
     const paidSellerOrders = await SellerOrder.find({
       orderId: { $in: paidOrderIds },
@@ -36,7 +31,6 @@ export const getAdminOverviewHandler = async (
       0
     );
 
-    // 3. Catalog & Vendor Counts
     const activeProductsCount = await Product.countDocuments({
       status: ProductStatus.ACTIVE,
     });
@@ -47,7 +41,6 @@ export const getAdminOverviewHandler = async (
       approvalStatus: ApprovalStatus.PENDING,
     });
 
-    // 4. Recent Orders
     const recentOrders = await Order.find()
       .sort({ createdAt: -1 })
       .limit(8)
@@ -74,4 +67,3 @@ export const getAdminOverviewHandler = async (
     next(error);
   }
 };
-

@@ -45,4 +45,3 @@ export const createCheckoutSessionController = async (
     next(error);
   }
 };
-

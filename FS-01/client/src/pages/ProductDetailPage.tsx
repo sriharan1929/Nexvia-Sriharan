@@ -38,7 +38,6 @@ export default function ProductDetailPage() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Delivery check state
   const [pincode, setPincode] = useState('');
   const [pincodeChecked, setPincodeChecked] = useState(false);
 
@@ -47,7 +46,6 @@ export default function ProductDetailPage() {
   const { isInWishlist, toggleWishlist } = useWishlist();
   const [isAdding, setIsAdding] = useState(false);
 
-  // Reviews states
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [reviewRating, setReviewRating] = useState(5);

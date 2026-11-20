@@ -5,10 +5,6 @@ import {
   getProductReviews,
 } from '../services/review.service';
 
-/**
- * Creates customer review for a verified delivered product purchase.
- * POST /api/v1/products/:id/reviews
- */
 export const createProductReviewHandler = async (
   req: AuthenticatedRequest,
   res: Response,
@@ -37,10 +33,6 @@ export const createProductReviewHandler = async (
   }
 };
 
-/**
- * Public listing of product reviews.
- * GET /api/v1/products/:id/reviews
- */
 export const getProductReviewsHandler = async (
   req: Request,
   res: Response,
@@ -67,4 +59,3 @@ export const getProductReviewsHandler = async (
     next(error);
   }
 };
-

@@ -71,10 +71,8 @@ const reviewSchema = new Schema<IReview>(
   }
 );
 
-// Enforce 1 review per customer per purchased product
 reviewSchema.index({ customerId: 1, productId: 1 }, { unique: true });
 reviewSchema.index({ productId: 1, createdAt: -1 });
 
 export const Review: Model<IReview> = mongoose.model<IReview>('Review', reviewSchema);
 export default Review;
-

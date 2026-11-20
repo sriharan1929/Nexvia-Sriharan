@@ -59,7 +59,7 @@ export default function OrdersPage() {
                 key={order._id}
                 className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:border-amber-200 transition"
               >
-                {/* Order Top Bar */}
+
                 <div className="bg-gray-50 px-6 py-4 border-b border-gray-200/80 flex flex-wrap items-center justify-between gap-4 text-xs">
                   <div className="flex items-center space-x-6">
                     <div>
@@ -146,4 +146,3 @@ export default function OrdersPage() {
     </div>
   );
 }
-

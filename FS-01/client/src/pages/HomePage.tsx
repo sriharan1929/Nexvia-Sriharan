@@ -102,7 +102,6 @@ export default function HomePage() {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const { isInWishlist, toggleWishlist } = useWishlist();
 
-  // Auto-advance banner carousel every 5s
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
@@ -110,7 +109,6 @@ export default function HomePage() {
     return () => clearInterval(timer);
   }, []);
 
-  // Fetch real catalog products from MongoDB
   useEffect(() => {
     const fetchCatalog = async () => {
       try {
@@ -123,14 +121,12 @@ export default function HomePage() {
     fetchCatalog();
   }, []);
 
-  // currentSlide is used in the map loop for opacity toggling
-
   return (
     <div className="min-h-screen bg-white flex flex-col font-sans">
       <Navbar />
 
       <main className="flex-1 w-full">
-        {/* 1. Hero Banner Carousel */}
+
         <div className="relative w-full h-[340px] sm:h-[420px] md:h-[480px] bg-gray-900 overflow-hidden">
           {HERO_SLIDES.map((item, idx) => (
             <div
@@ -433,4 +429,3 @@ export default function HomePage() {
     </div>
   );
 }
-

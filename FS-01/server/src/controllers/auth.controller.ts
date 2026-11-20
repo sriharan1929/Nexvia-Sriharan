@@ -20,16 +20,13 @@ export const register = async (
   try {
     const { name, email, password, role } = req.body;
 
-    // Check if email already registered
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       throw new AppError('An account with this email already exists', 409);
     }
 
-    // Securely hash password
     const passwordHash = await hashPassword(password);
 
-    // Build initial roles array
     const roles: UserRole[] = [UserRole.CUSTOMER];
     if (role === UserRole.VENDOR) {
       roles.push(UserRole.VENDOR);
@@ -43,10 +40,8 @@ export const register = async (
       accountStatus: 'ACTIVE',
     });
 
-    // Generate tokens
     const { accessToken, refreshToken } = generateTokens(user);
 
-    // Set HTTP-only refresh cookie
     setRefreshTokenCookie(res, refreshToken);
 
     res.status(201).json({
@@ -77,7 +72,6 @@ export const login = async (
   try {
     const { email, password } = req.body;
 
-    // Must explicitly select passwordHash
     const user = await User.findOne({ email }).select('+passwordHash');
     if (!user) {
       throw new AppError('Invalid email or password', 401);
@@ -92,10 +86,8 @@ export const login = async (
       throw new AppError('Invalid email or password', 401);
     }
 
-    // Generate tokens
     const { accessToken, refreshToken } = generateTokens(user);
 
-    // Set HTTP-only refresh cookie
     setRefreshTokenCookie(res, refreshToken);
 
     res.status(200).json({
@@ -137,7 +129,6 @@ export const refresh = async (
       throw new AppError('Invalid or expired refresh token. Please log in again.', 401);
     }
 
-    // Check if token was blacklisted
     if (decoded.jti && (await isTokenBlacklisted(decoded.jti))) {
       clearRefreshTokenCookie(res);
       throw new AppError('Token has been revoked. Please log in again.', 401);
@@ -149,7 +140,6 @@ export const refresh = async (
       throw new AppError('User session is invalid', 401);
     }
 
-    // Rotate refresh token
     if (decoded.jti) {
       await blacklistToken(decoded.jti);
     }
@@ -182,7 +172,7 @@ export const logout = async (
           await blacklistToken(decoded.jti);
         }
       } catch {
-        // Token already invalid/expired; continue with clearing cookie
+
       }
     }
 
@@ -225,4 +215,3 @@ export const getMe = async (
     next(error);
   }
 };
-

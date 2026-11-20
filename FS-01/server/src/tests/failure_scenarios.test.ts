@@ -7,7 +7,6 @@ describe('Resilience & Failure Scenario Verification', () => {
       let currentStock = 1;
       const requestedQty = 1;
 
-      // Simulated atomic update: { stock: { $gte: qty } }, { $inc: { stock: -qty } }
       const tryReserve = (qty: number) => {
         if (currentStock >= qty) {
           currentStock -= qty;
@@ -16,32 +15,26 @@ describe('Resilience & Failure Scenario Verification', () => {
         return { success: false, remaining: currentStock };
       };
 
-      // Customer 1 attempts reservation
       const res1 = tryReserve(requestedQty);
       expect(res1.success).toBe(true);
       expect(res1.remaining).toBe(0);
 
-      // Customer 2 attempts simultaneous reservation for same remaining stock
       const res2 = tryReserve(requestedQty);
       expect(res2.success).toBe(false);
-      expect(res2.remaining).toBe(0); // Never drops below 0
+      expect(res2.remaining).toBe(0);
     });
 
     it('should rollback reserved items if checkout fails midway', () => {
       let productStock = 5;
       const reservedList = [{ productId: 'p1', quantity: 2 }];
 
-      // Step 1: reserve 2 units
       productStock -= 2;
       expect(productStock).toBe(3);
 
-      // Step 2: failure happens (e.g. invalid coupon or db exception)
-      // Rollback logic
       for (const item of reservedList) {
         productStock += item.quantity;
       }
 
-      // Stock is restored to exact initial quantity
       expect(productStock).toBe(5);
     });
   });
@@ -54,11 +47,9 @@ describe('Resilience & Failure Scenario Verification', () => {
         status: 'HELD',
       };
 
-      // Customer checks out 3 units
       stock -= reservation.quantity;
       expect(stock).toBe(7);
 
-      // Payment fails -> processPaymentFailure releases held reservations
       if (reservation.status === 'HELD') {
         stock += reservation.quantity;
         reservation.status = 'RELEASED';
@@ -86,16 +77,13 @@ describe('Resilience & Failure Scenario Verification', () => {
         fulfillmentStatus: FulfillmentStatus.PLACED,
       };
 
-      // Vendor A packs and ships their items
       sellerOrderA.fulfillmentStatus = FulfillmentStatus.PACKED;
       sellerOrderA.fulfillmentStatus = FulfillmentStatus.SHIPPED;
 
-      // Vendor B is still preparing / placed
       expect(sellerOrderA.fulfillmentStatus).toBe(FulfillmentStatus.SHIPPED);
       expect(sellerOrderB.fulfillmentStatus).toBe(FulfillmentStatus.PLACED);
       expect(parentOrder.paymentStatus).toBe(PaymentStatus.PAID);
 
-      // Vendor B ships later
       sellerOrderB.fulfillmentStatus = FulfillmentStatus.PACKED;
       sellerOrderB.fulfillmentStatus = FulfillmentStatus.SHIPPED;
       sellerOrderB.fulfillmentStatus = FulfillmentStatus.DELIVERED;
@@ -119,17 +107,14 @@ describe('Resilience & Failure Scenario Verification', () => {
         return { alreadyProcessed: false };
       };
 
-      // First webhook delivery
       const res1 = handleWebhookCapture('evt_pay_cap_998877');
       expect(res1.alreadyProcessed).toBe(false);
       expect(routeTransfersCount).toBe(1);
 
-      // Duplicate retry from gateway
       const res2 = handleWebhookCapture('evt_pay_cap_998877');
       expect(res2.alreadyProcessed).toBe(true);
-      expect(routeTransfersCount).toBe(1); // No double transfer!
+      expect(routeTransfersCount).toBe(1);
 
-      // Third duplicate
       const res3 = handleWebhookCapture('evt_pay_cap_998877');
       expect(res3.alreadyProcessed).toBe(true);
       expect(routeTransfersCount).toBe(1);
@@ -154,16 +139,12 @@ describe('Resilience & Failure Scenario Verification', () => {
         return paymentStatus === PaymentStatus.PAID && fulfillmentStatus === FulfillmentStatus.DELIVERED;
       };
 
-      // Unpaid order
       expect(canReview(PaymentStatus.PENDING, FulfillmentStatus.DELIVERED)).toBe(false);
 
-      // Paid but order is still placed or shipped
       expect(canReview(PaymentStatus.PAID, FulfillmentStatus.PLACED)).toBe(false);
       expect(canReview(PaymentStatus.PAID, FulfillmentStatus.SHIPPED)).toBe(false);
 
-      // Paid and delivered
       expect(canReview(PaymentStatus.PAID, FulfillmentStatus.DELIVERED)).toBe(true);
     });
   });
 });
-

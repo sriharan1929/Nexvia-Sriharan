@@ -33,7 +33,7 @@ function NotFoundPage() {
 export default function AppRouter() {
   return (
     <Routes>
-      {/* Public Pages */}
+
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
@@ -42,7 +42,6 @@ export default function AppRouter() {
       <Route path="/cart" element={<CartPage />} />
       <Route path="/wishlist" element={<WishlistPage />} />
 
-      {/* Checkout & Customer Orders */}
       <Route
         path="/checkout"
         element={
@@ -68,7 +67,6 @@ export default function AppRouter() {
         }
       />
 
-      {/* Vendor Onboarding & Portal */}
       <Route
         path="/vendor/apply"
         element={
@@ -94,7 +92,6 @@ export default function AppRouter() {
         }
       />
 
-      {/* Admin Moderation & Analytics Console */}
       <Route
         path="/admin/analytics"
         element={
@@ -120,7 +117,6 @@ export default function AppRouter() {
         }
       />
 
-      {/* 404 Catch-all */}
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

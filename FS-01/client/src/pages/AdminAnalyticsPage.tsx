@@ -24,7 +24,6 @@ export default function AdminAnalyticsPage() {
   const [coupons, setCoupons] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Create Coupon Modal
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [code, setCode] = useState('');
   const [type, setType] = useState<'PERCENTAGE' | 'FIXED'>('PERCENTAGE');

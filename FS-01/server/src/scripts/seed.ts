@@ -13,7 +13,6 @@ async function seedDatabase() {
   console.log('[START] Starting Market Zone marketplace seed process...');
   await connectDB();
 
-  // 1. Clear existing sample collections
   console.log('[CLEAN] Purging existing sample data...');
   await Promise.all([
     User.deleteMany({}),
@@ -23,7 +22,6 @@ async function seedDatabase() {
     Coupon.deleteMany({}),
   ]);
 
-  // 2. Create Users
   console.log('[USERS] Seeding core platform users...');
   const commonPasswordHash = await hashPassword('MarketZone@123');
 
@@ -67,7 +65,6 @@ async function seedDatabase() {
     accountStatus: 'ACTIVE',
   });
 
-  // 3. Create Vendor Profiles
   console.log('[VENDORS] Seeding vendor store profiles...');
   const vendorProfile1 = await VendorProfile.create({
     userId: vendorUser1._id,
@@ -103,7 +100,6 @@ async function seedDatabase() {
     approvalStatus: ApprovalStatus.PENDING,
   });
 
-  // 4. Create Categories
   console.log('[CATEGORIES] Seeding catalog categories...');
   const catElectronics = await Category.create({
     name: 'Electronics & Peripherals',
@@ -123,7 +119,6 @@ async function seedDatabase() {
     isActive: true,
   });
 
-  // 5. Create Authoritative Products
   console.log('[PRODUCTS] Seeding marketplace products...');
   const v1Id = vendorProfile1._id;
   const v2Id = vendorProfile2._id;
@@ -138,7 +133,7 @@ async function seedDatabase() {
       title: 'TechNexus RGB Mechanical Gaming Keyboard (Hot-swappable)',
       slug: 'technexus-rgb-mechanical-gaming-keyboard',
       description: 'Tenkeyless mechanical keyboard with pre-lubed red linear switches, double-shot PBT keycaps, per-key RGB backlighting, and braided USB-C detachable cable. Designed for high-speed typing and responsive esports gaming.',
-      pricePaise: 249900, // ₹2,499.00
+      pricePaise: 249900,
       compareAtPricePaise: 399900,
       stock: 35,
       status: ProductStatus.ACTIVE,
@@ -157,7 +152,7 @@ async function seedDatabase() {
       title: 'Precision-X Ultralight Wireless Gaming Mouse (26K DPI)',
       slug: 'precision-x-ultralight-wireless-gaming-mouse',
       description: 'Weighing only 58 grams, Precision-X delivers sub-1ms wireless latency, PixArt 3395 optical sensor, PTFE glide feet, and 80-hour battery life with fast Type-C recharging.',
-      pricePaise: 129900, // ₹1,299.00
+      pricePaise: 129900,
       compareAtPricePaise: 199900,
       stock: 50,
       status: ProductStatus.ACTIVE,
@@ -176,7 +171,7 @@ async function seedDatabase() {
       title: 'ProConnect 7-in-1 Aluminium USB-C Multiport Hub',
       slug: 'proconnect-7-in-1-aluminium-usbc-multiport-hub',
       description: 'Dual 4K@60Hz HDMI, 100W Power Delivery pass-through charging, Gigabit Ethernet, SD/TF card reader, and USB 3.2 10Gbps ports encased in heat-dissipating aerospace-grade aluminium.',
-      pricePaise: 319900, // ₹3,199.00
+      pricePaise: 319900,
       compareAtPricePaise: 449900,
       stock: 20,
       status: ProductStatus.ACTIVE,
@@ -195,7 +190,7 @@ async function seedDatabase() {
       title: 'Authentic Handwoven Kashmiri Pashmina Shawl (Ivory & Gold)',
       slug: 'authentic-handwoven-kashmiri-pashmina-shawl',
       description: 'Crafted from the finest Changthangi mountain goat fleece in Srinagar, Jammu & Kashmir. Hand-spun on traditional charkhas with delicate Sozni needlework border embroidery.',
-      pricePaise: 450000, // ₹4,500.00
+      pricePaise: 450000,
       compareAtPricePaise: 650000,
       stock: 12,
       status: ProductStatus.ACTIVE,
@@ -214,7 +209,7 @@ async function seedDatabase() {
       title: 'Jaipur Heritage Block-Printed Cotton King Bedspread (With 2 Pillows)',
       slug: 'jaipur-heritage-block-printed-cotton-bedspread',
       description: '100% long-staple cotton bedsheet hand-printed using traditional wooden blocks and natural vegetable dyes by Sanganeri artisans. Includes two coordinating envelope pillowcases.',
-      pricePaise: 185000, // ₹1,850.00
+      pricePaise: 185000,
       compareAtPricePaise: 279900,
       stock: 25,
       status: ProductStatus.ACTIVE,
@@ -233,7 +228,7 @@ async function seedDatabase() {
       title: 'Artisan Terracotta Ceramic Glazed Dinner Set (6 Piece Handcrafted)',
       slug: 'artisan-terracotta-ceramic-glazed-dinner-set',
       description: 'Microwave and dishwasher-safe stoneware dinner set handcrafted by pottery masters in Khurja. Matte earthy finish with food-safe lead-free glaze.',
-      pricePaise: 220000, // ₹2,200.00
+      pricePaise: 220000,
       compareAtPricePaise: 320000,
       stock: 18,
       status: ProductStatus.ACTIVE,
@@ -250,17 +245,15 @@ async function seedDatabase() {
 
   const createdProducts = await Product.insertMany(productsData);
 
-  // Sync to Elasticsearch if available
   console.log('[SEARCH] Syncing products to search index...');
   for (const prod of createdProducts) {
     try {
       await indexProduct(prod);
     } catch {
-      // Elasticsearch gracefully ignored during local seed if offline
+
     }
   }
 
-  // 6. Create Promotional Coupons
   console.log('[COUPONS] Seeding promotional coupons...');
   const thirtyDays = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
@@ -269,8 +262,8 @@ async function seedDatabase() {
       code: 'SAVE10',
       type: 'PERCENTAGE',
       percentage: 10,
-      maxDiscountPaise: 50000, // ₹500 max
-      minOrderPaise: 100000, // Min ₹1,000
+      maxDiscountPaise: 50000,
+      minOrderPaise: 100000,
       usageLimit: 1000,
       usedCount: 0,
       validFrom: new Date(),
@@ -280,8 +273,8 @@ async function seedDatabase() {
     {
       code: 'FLAT200',
       type: 'FIXED',
-      valuePaise: 20000, // ₹200 off
-      minOrderPaise: 150000, // Min ₹1,500
+      valuePaise: 20000,
+      minOrderPaise: 150000,
       usageLimit: 500,
       usedCount: 0,
       validFrom: new Date(),
@@ -291,8 +284,8 @@ async function seedDatabase() {
     {
       code: 'WELCOME50',
       type: 'FIXED',
-      valuePaise: 5000, // ₹50 off
-      minOrderPaise: 50000, // Min ₹500
+      valuePaise: 5000,
+      minOrderPaise: 50000,
       usageLimit: 5000,
       usedCount: 0,
       validFrom: new Date(),

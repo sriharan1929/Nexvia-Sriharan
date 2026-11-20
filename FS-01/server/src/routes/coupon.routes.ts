@@ -7,4 +7,3 @@ const router = Router();
 router.post('/validate', authenticate, validateCouponHandler);
 
 export default router;
-

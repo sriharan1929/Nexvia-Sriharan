@@ -87,4 +87,3 @@ couponSchema.pre('validate', function () {
 
 export const Coupon: Model<ICoupon> = mongoose.model<ICoupon>('Coupon', couponSchema);
 export default Coupon;
-

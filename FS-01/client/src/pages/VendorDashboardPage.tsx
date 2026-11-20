@@ -17,7 +17,6 @@ export default function VendorDashboardPage() {
   const [showProductModal, setShowProductModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
-  // Form states
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [priceInRupees, setPriceInRupees] = useState('');
@@ -400,4 +399,3 @@ export default function VendorDashboardPage() {
     </div>
   );
 }
-

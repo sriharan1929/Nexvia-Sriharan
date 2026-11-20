@@ -51,21 +51,21 @@ describe('Cart Persistence & Calculations', () => {
   });
 
   it('should accurately calculate multi-vendor subtotal in integer paise', () => {
-    // Simulating two items from two independent sellers
+
     const mockHydratedItems = [
       {
         productId: 'prod_keyboard_01',
         vendorId: 'vendor_a_electronics',
-        pricePaise: 100000, // ₹1,000.00
+        pricePaise: 100000,
         quantity: 2,
-        lineTotalPaise: 100000 * 2, // 200,000 paise
+        lineTotalPaise: 100000 * 2,
       },
       {
         productId: 'prod_mouse_02',
         vendorId: 'vendor_b_peripherals',
-        pricePaise: 50000, // ₹500.00
+        pricePaise: 50000,
         quantity: 1,
-        lineTotalPaise: 50000 * 1, // 50,000 paise
+        lineTotalPaise: 50000 * 1,
       },
     ];
 
@@ -79,9 +79,9 @@ describe('Cart Persistence & Calculations', () => {
     );
     const vendorIds = new Set(mockHydratedItems.map((item) => item.vendorId));
 
-    expect(subtotalPaise).toBe(250000); // Exactly ₹2,500.00 in integer paise
+    expect(subtotalPaise).toBe(250000);
     expect(totalCount).toBe(3);
-    expect(vendorIds.size).toBe(2); // 2 distinct vendors in 1 checkout
+    expect(vendorIds.size).toBe(2);
   });
 
   it('should clear all items on clearCart', async () => {
@@ -96,4 +96,3 @@ describe('Cart Persistence & Calculations', () => {
     expect(items).toHaveLength(0);
   });
 });
-

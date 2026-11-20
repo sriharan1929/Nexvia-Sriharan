@@ -15,7 +15,6 @@ export const getPresignedUploadUrl = async (
       throw new AppError('fileName and contentType are required', 400);
     }
 
-    // Validate image mime type
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
     if (!allowedTypes.includes(contentType.toLowerCase())) {
       throw new AppError(
@@ -47,4 +46,3 @@ export const mockUpload = async (
     message: 'Mock file uploaded successfully in development mode',
   });
 };
-

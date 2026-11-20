@@ -36,9 +36,8 @@ export interface CartResponse {
   vendorCount: number;
 }
 
-const CART_TTL_SECONDS = 7 * 24 * 60 * 60; // 7 days
+const CART_TTL_SECONDS = 7 * 24 * 60 * 60;
 
-// In-memory fallback if Redis is offline (e.g. unit tests or local setup without Redis)
 const memoryCartStore = new Map<string, { items: StoredCartItem[]; updatedAt: string }>();
 
 const getCartKey = (userId: string): string => `cart:v1:${userId}`;
@@ -304,4 +303,3 @@ export const getCartCount = async (userId: string): Promise<number> => {
   const storedItems = await getRawCartItems(userId);
   return storedItems.reduce((acc, item) => acc + item.quantity, 0);
 };
-

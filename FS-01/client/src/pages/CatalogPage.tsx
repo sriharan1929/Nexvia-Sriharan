@@ -13,14 +13,12 @@ export default function CatalogPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Filters from URL
   const q = searchParams.get('q') || '';
   const selectedCategory = searchParams.get('category') || '';
   const sort = searchParams.get('sort') || 'recommended';
   const priceRange = searchParams.get('price') || '';
   const minRating = searchParams.get('rating') || '';
 
-  // Mobile filter drawer state
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   useEffect(() => {

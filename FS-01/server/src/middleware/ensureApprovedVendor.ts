@@ -43,4 +43,3 @@ export const ensureApprovedVendor = async (
     next(error);
   }
 };
-

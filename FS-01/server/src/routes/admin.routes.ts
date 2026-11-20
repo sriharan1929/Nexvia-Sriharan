@@ -22,24 +22,18 @@ import {
 
 const router = Router();
 
-// All admin routes require authentication and ADMIN role
 router.use(authenticate, authorize(UserRole.ADMIN));
 
-// Vendor management
 router.get('/vendors', listVendors);
 router.patch('/vendors/:id/status', validate(updateVendorStatusSchema), updateVendorStatus);
 
-// Category management
 router.get('/categories', listCategories);
 router.post('/categories', validate(createCategorySchema), createCategory);
 router.patch('/categories/:id', validate(updateCategorySchema), updateCategory);
 
-// Coupon management
 router.get('/coupons', listAdminCouponsHandler);
 router.post('/coupons', createAdminCouponHandler);
 
-// Analytics
 router.get('/analytics/overview', getAdminOverviewHandler);
 
 export default router;
-

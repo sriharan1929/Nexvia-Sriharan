@@ -80,7 +80,6 @@ const vendorProfileSchema = new Schema<IVendorProfile>(
   }
 );
 
-// Pre-validate hook to generate unique slug if not set
 vendorProfileSchema.pre('validate', function () {
   if (this.storeName && !this.slug) {
     this.slug = slugify(this.storeName, { lower: true, strict: true });

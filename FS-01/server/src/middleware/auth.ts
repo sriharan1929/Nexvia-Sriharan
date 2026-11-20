@@ -22,7 +22,6 @@ export const authenticate = async (
 
     const decoded = verifyAccessToken(token);
 
-    // Verify user exists and is ACTIVE
     const user = await User.findById(decoded.userId).select('accountStatus roles email');
     if (!user) {
       throw new AppError('The user belonging to this token no longer exists', 401);
@@ -76,4 +75,3 @@ export const authorize = (...allowedRoles: UserRole[]) => {
     next();
   };
 };
-

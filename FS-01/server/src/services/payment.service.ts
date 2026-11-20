@@ -12,7 +12,6 @@ import { Product } from '../models/Product';
 import { AppError } from '../middleware/errorHandler';
 import { PaymentStatus, TransferStatus } from '../types';
 
-// Initialize Razorpay SDK instance if keys are configured
 const isLiveConfigured =
   Boolean(env.RAZORPAY_KEY_ID) &&
   Boolean(env.RAZORPAY_KEY_SECRET) &&
@@ -25,9 +24,6 @@ const razorpay = isLiveConfigured
     })
   : null;
 
-/**
- * Creates or retrieves a Razorpay Order for a pending Market Zone checkout.
- */
 export const createGatewayOrder = async (
   orderId: string,
   amountPaise: number,
@@ -44,7 +40,7 @@ export const createGatewayOrder = async (
     });
     razorpayOrderId = rzpOrder.id;
   } else {
-    // Deterministic mock order ID for testing / development without live credentials
+
     razorpayOrderId = `order_mock_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 7)}`;
   }
 

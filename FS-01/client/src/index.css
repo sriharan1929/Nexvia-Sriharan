@@ -22,7 +22,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom scrollbar for mega menu and filter sidebar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;

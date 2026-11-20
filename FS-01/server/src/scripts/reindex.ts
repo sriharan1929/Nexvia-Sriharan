@@ -9,10 +9,9 @@ const runReindex = async () => {
   console.log('--- [Elasticsearch Reindex Job Started] ---');
 
   try {
-    // 1. Connect DB
+
     await connectDB();
 
-    // 2. Initialize ES client & check connectivity
     const es = getESClient();
     try {
       const ping = await es.ping();
@@ -22,7 +21,6 @@ const runReindex = async () => {
       process.exit(1);
     }
 
-    // 3. Reset index
     const exists = await es.indices.exists({ index: PRODUCTS_INDEX });
     if (exists) {
       console.log(`[Elasticsearch] Deleting existing index "${PRODUCTS_INDEX}"...`);
@@ -32,7 +30,6 @@ const runReindex = async () => {
     console.log(`[Elasticsearch] Creating fresh index "${PRODUCTS_INDEX}"...`);
     await initProductIndex();
 
-    // 4. Query all ACTIVE products
     const activeProducts = await Product.find({ status: ProductStatus.ACTIVE });
     console.log(`[MongoDB] Found ${activeProducts.length} ACTIVE products to index.`);
 
@@ -55,4 +52,3 @@ const runReindex = async () => {
 };
 
 runReindex();
-

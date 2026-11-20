@@ -4,11 +4,8 @@ import { verifyPayment, simulatePayment } from '../controllers/payment.controlle
 
 const router = Router();
 
-// Customer payment verification
 router.post('/razorpay/verify', authenticate, verifyPayment);
 
-// Rapid testing / development simulation
 router.post('/simulate', authenticate, simulatePayment);
 
 export default router;
-

@@ -123,4 +123,3 @@ export const getCartCountController = async (
     next(error);
   }
 };
-

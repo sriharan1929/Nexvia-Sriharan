@@ -130,4 +130,3 @@ export const SellerOrder: Model<ISellerOrder> = mongoose.model<ISellerOrder>(
   sellerOrderSchema
 );
 export default SellerOrder;
-

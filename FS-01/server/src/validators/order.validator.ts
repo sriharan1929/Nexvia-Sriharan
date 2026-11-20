@@ -53,4 +53,3 @@ export type CheckoutSessionInput = z.infer<typeof checkoutSessionSchema>;
 export type UpdateFulfillmentStatusInput = z.infer<
   typeof updateFulfillmentStatusSchema
 >;
-

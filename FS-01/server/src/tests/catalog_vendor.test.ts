@@ -46,8 +46,8 @@ describe('Product Validation (Zod)', () => {
     const validProduct = {
       title: 'Mechanical Gaming Keyboard RGB',
       description: 'Tenkeyless RGB backlit mechanical keyboard with blue tactile switches.',
-      pricePaise: 249900, // ₹2,499.00
-      compareAtPricePaise: 299900, // ₹2,999.00
+      pricePaise: 249900,
+      compareAtPricePaise: 299900,
       stock: 45,
       categoryId: '67339794bf3214567890abcd',
       status: ProductStatus.ACTIVE,
@@ -75,7 +75,7 @@ describe('Product Validation (Zod)', () => {
     const floatProduct = {
       title: 'Mechanical Gaming Keyboard RGB',
       description: 'Tenkeyless RGB backlit mechanical keyboard.',
-      pricePaise: 2499.50, // Not an integer paise!
+      pricePaise: 2499.50,
       stock: 10,
       categoryId: '67339794bf3214567890abcd',
     };

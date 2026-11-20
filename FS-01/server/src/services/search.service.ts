@@ -44,9 +44,6 @@ export interface SearchResponse {
   source: 'elasticsearch' | 'mongodb_fallback';
 }
 
-/**
- * Initializes the Elasticsearch index with mappings if it does not already exist.
- */
 export const initProductIndex = async (): Promise<boolean> => {
   try {
     const es = getESClient();
@@ -100,9 +97,6 @@ export const initProductIndex = async (): Promise<boolean> => {
   }
 };
 
-/**
- * Builds the Boolean Elasticsearch Query DSL.
- */
 export const buildElasticQuery = (options: SearchOptions) => {
   const { q, category, minPrice, maxPrice, sort, page = 1, limit = 12 } = options;
   const from = (page - 1) * limit;
@@ -110,7 +104,6 @@ export const buildElasticQuery = (options: SearchOptions) => {
   const must: any[] = [];
   const filter: any[] = [{ term: { status: ProductStatus.ACTIVE } }];
 
-  // Full-text match query with field boosting
   if (q && q.trim()) {
     must.push({
       multi_match: {
@@ -124,7 +117,6 @@ export const buildElasticQuery = (options: SearchOptions) => {
     must.push({ match_all: {} });
   }
 
-  // Category filter
   if (category) {
     filter.push({
       bool: {
@@ -136,7 +128,6 @@ export const buildElasticQuery = (options: SearchOptions) => {
     });
   }
 
-  // Price range filters
   if (minPrice !== undefined || maxPrice !== undefined) {
     const priceRange: Record<string, any> = {};
     if (minPrice !== undefined) priceRange.gte = minPrice;
@@ -144,7 +135,6 @@ export const buildElasticQuery = (options: SearchOptions) => {
     filter.push({ range: { pricePaise: priceRange } });
   }
 
-  // Sort orders
   const sortArray: any[] = [];
   if (sort === 'price_asc') {
     sortArray.push({ pricePaise: { order: 'asc' } });
@@ -156,7 +146,7 @@ export const buildElasticQuery = (options: SearchOptions) => {
   } else if (sort === 'newest') {
     sortArray.push({ createdAt: { order: 'desc' } });
   } else {
-    // Relevance default (score)
+
     if (q && q.trim()) {
       sortArray.push({ _score: { order: 'desc' } });
     }
@@ -176,14 +166,10 @@ export const buildElasticQuery = (options: SearchOptions) => {
   };
 };
 
-/**
- * Indexes or updates a single product in Elasticsearch.
- */
 export const indexProduct = async (product: IProduct): Promise<void> => {
   try {
     const es = getESClient();
 
-    // Populate vendor and category details if needed
     let vendorName = '';
     let categoryName = '';
 

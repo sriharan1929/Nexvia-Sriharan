@@ -9,7 +9,7 @@ const connectElasticsearch = (): Client => {
   esClient = new Client({
     node: env.ELASTICSEARCH_URL,
     maxRetries: 1,
-    requestTimeout: 2000, // Fast 2s timeout for graceful fallback
+    requestTimeout: 2000,
   });
 
   return esClient;

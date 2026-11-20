@@ -21,7 +21,6 @@ import couponRouter from './routes/coupon.routes';
 
 const app = express();
 
-// Security & parsing middleware
 app.use(helmet());
 app.use(
   cors({
@@ -32,20 +31,17 @@ app.use(
 app.use(morgan('dev'));
 app.use(cookieParser());
 
-// Raw body for webhook signature verification
 app.use('/api/v1/webhooks', express.raw({ type: 'application/json' }));
 
-// JSON body for all other routes
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
 app.use('/api/v1', healthRouter);
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/vendor', vendorRouter);
 app.use('/api/v1/admin', adminRouter);
-app.use('/api/v1', catalogRouter); // covers /api/v1/products and /api/v1/categories
+app.use('/api/v1', catalogRouter);
 app.use('/api/v1/uploads', uploadRouter);
 app.use('/api/v1/cart', cartRouter);
 app.use('/api/v1/checkout', checkoutRouter);
@@ -54,7 +50,6 @@ app.use('/api/v1/payments', paymentRouter);
 app.use('/api/v1/webhooks', webhookRouter);
 app.use('/api/v1/coupons', couponRouter);
 
-// Error handler (must be last)
 app.use(errorHandler);
 
 export default app;

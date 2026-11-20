@@ -12,7 +12,6 @@ export default function VendorOrdersPage() {
   const [statusFilter, setStatusFilter] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
-  // Ship modal state
   const [shippingModalOrder, setShippingModalOrder] = useState<any | null>(null);
   const [trackingNumber, setTrackingNumber] = useState('');
   const [trackingUrl, setTrackingUrl] = useState('');
@@ -321,4 +320,3 @@ export default function VendorOrdersPage() {
     </div>
   );
 }
-

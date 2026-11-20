@@ -29,4 +29,3 @@ function Badge({
 }
 
 export { Badge };
-

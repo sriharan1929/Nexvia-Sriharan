@@ -36,7 +36,7 @@ const userSchema = new Schema<IUser>(
     passwordHash: {
       type: String,
       required: [true, 'Password hash is required'],
-      select: false, // Do not return password by default
+      select: false,
     },
     roles: {
       type: [String],
@@ -63,7 +63,6 @@ const userSchema = new Schema<IUser>(
   }
 );
 
-// Method to verify password
 userSchema.methods.comparePassword = async function (
   candidatePassword: string
 ): Promise<boolean> {
@@ -72,4 +71,3 @@ userSchema.methods.comparePassword = async function (
 
 export const User: Model<IUser> = mongoose.model<IUser>('User', userSchema);
 export default User;
-

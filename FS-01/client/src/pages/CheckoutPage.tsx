@@ -22,6 +22,7 @@ import {
   Lock,
   PackageCheck,
   Check,
+  Info,
 } from 'lucide-react';
 
 const checkoutAddressSchema = z.object({
@@ -41,7 +42,6 @@ const checkoutAddressSchema = z.object({
 
 type CheckoutAddressFormData = z.infer<typeof checkoutAddressSchema>;
 
-// Dynamically load Razorpay SDK script
 const loadRazorpayScript = (): Promise<boolean> => {
   return new Promise((resolve) => {
     if ((window as any).Razorpay) {
@@ -95,7 +95,7 @@ export default function CheckoutPage() {
 
   const handleRemoveCoupon = () => {
     setAppliedCoupon(null);
-    toast('Coupon removed', { icon: 'ℹ️' });
+    toast('Coupon removed', { icon: <Info className="w-5 h-5 text-sky-500" /> });
   };
 
   const {
@@ -115,7 +115,6 @@ export default function CheckoutPage() {
     },
   });
 
-  // Group items by vendor for review
   const vendorGroups = items.reduce<Record<string, { vendorName: string; items: typeof items }>>(
     (acc, item) => {
       const vendorId = item.product.vendor?._id || 'unknown';
@@ -139,7 +138,7 @@ export default function CheckoutPage() {
 
     setIsSubmitting(true);
     try {
-      // 1. Create checkout session & parent order
+
       const sessionRes = await api.post('/checkout/session', {
         address: {
           ...addressData,
@@ -196,7 +195,7 @@ export default function CheckoutPage() {
         },
         modal: {
           ondismiss: () => {
-            toast('Payment cancelled. You can complete payment from Order Details.', { icon: 'ℹ️' });
+            toast('Payment cancelled. You can complete payment from Order Details.', { icon: <Info className="w-5 h-5 text-sky-500" /> });
             navigate(`/orders/${order._id}`);
           },
         },
@@ -288,7 +287,7 @@ export default function CheckoutPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* Left 7 Columns: Delivery Address, Multi-Vendor Packages, Payment Mode */}
             <div className="lg:col-span-7 space-y-6">
-              
+
               {/* Step 1: Address Card */}
               <div className="bg-white border border-[#E9E9ED] rounded-sm p-6 shadow-xs">
                 <div className="flex items-center justify-between pb-3 mb-4 border-b border-[#E9E9ED]">
@@ -571,7 +570,7 @@ export default function CheckoutPage() {
             {/* Right 5 Columns: Sticky Price Details & Place Order */}
             <div className="lg:col-span-5">
               <div className="bg-white border border-[#E9E9ED] rounded-sm p-6 sticky top-24 shadow-xs space-y-6">
-                
+
                 {/* Coupons Box */}
                 <div>
                   <h3 className="text-xs font-bold uppercase tracking-wider text-[#535766] mb-2 flex items-center">

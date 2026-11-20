@@ -23,11 +23,9 @@ export default function Navbar() {
   const { wishlistCount } = useWishlist();
   const navigate = useNavigate();
 
-  // Navigation hover state
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
-  // Search state & suggestions
   const [searchQuery, setSearchQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
@@ -41,7 +39,6 @@ export default function Navbar() {
     { title: 'Wireless Gaming Mouse', query: 'mouse' },
   ];
 
-  // Close search suggestions on click outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {

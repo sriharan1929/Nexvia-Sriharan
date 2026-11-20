@@ -37,9 +37,6 @@ const ALLOWED_TRANSITIONS: Record<FulfillmentStatus, FulfillmentStatus[]> = {
   [FulfillmentStatus.CANCELLED]: [],
 };
 
-/**
- * Previews financial breakdown and per-vendor packages without creating database records.
- */
 export const previewCheckout = async (
   userId: string,
   _address: IAddressSnapshot,
@@ -57,7 +54,6 @@ export const previewCheckout = async (
     discountPaise = couponRes.discountPaise;
   }
 
-  // Group items by vendor
   const vendorMap = new Map<string, { vendorName: string; items: HydratedCartItem[] }>();
 
   for (const item of cart.items) {
@@ -93,8 +89,8 @@ export const previewCheckout = async (
     });
   }
 
-  const shippingPaise = 0; // Free delivery
-  const taxPaise = 0; // Inclusive
+  const shippingPaise = 0;
+  const taxPaise = 0;
   const totalPaise = Math.max(0, cart.subtotalPaise - discountPaise + shippingPaise + taxPaise);
 
   return {
@@ -108,9 +104,6 @@ export const previewCheckout = async (
   };
 };
 
-/**
- * Creates atomic checkout session: reserves stock, creates Parent Order + SellerOrders.
- */
 export const createCheckoutSession = async (
   userId: string,
   address: IAddressSnapshot,
@@ -131,7 +124,6 @@ export const createCheckoutSession = async (
     appliedCoupon = couponRes.coupon;
   }
 
-  // 1. Atomically reserve inventory for every item
   const reservedItems: { productId: string; quantity: number }[] = [];
 
   for (const item of cart.items) {
@@ -146,7 +138,7 @@ export const createCheckoutSession = async (
     );
 
     if (updateResult.modifiedCount === 0) {
-      // Rollback previous reservations
+
       for (const resItem of reservedItems) {
         await Product.updateOne(
           { _id: resItem.productId },
@@ -173,7 +165,6 @@ export const createCheckoutSession = async (
       cart.subtotalPaise - discountPaise + shippingPaise + taxPaise
     );
 
-    // 2. Create Parent Order
     const parentOrder = await Order.create({
       customerId: new mongoose.Types.ObjectId(userId),
       addressSnapshot: address,
@@ -193,7 +184,6 @@ export const createCheckoutSession = async (
       paymentStatus: PaymentStatus.PENDING,
     });
 
-    // Create payment gateway order and Payment document
     const gatewayOrder = await createGatewayOrder(
       parentOrder._id.toString(),
       totalPaise,
@@ -202,7 +192,6 @@ export const createCheckoutSession = async (
     parentOrder.razorpayOrderId = gatewayOrder.razorpayOrderId;
     await parentOrder.save();
 
-    // 3. Create Inventory Reservation records (expires in 15 minutes)
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
     const reservations = reservedItems.map((r) => ({
       orderId: parentOrder._id,
@@ -213,7 +202,6 @@ export const createCheckoutSession = async (
     }));
     await InventoryReservation.insertMany(reservations);
 
-    // 4. Group items by vendor and create SellerOrder records
     const vendorMap = new Map<string, HydratedCartItem[]>();
     for (const item of cart.items) {
       const vId = item.product.vendor?._id;
@@ -266,12 +254,10 @@ export const createCheckoutSession = async (
 
     const createdSellerOrders = await SellerOrder.insertMany(sellerOrdersToCreate);
 
-    // 5. Increment coupon usage if applied
     if (appliedCoupon) {
       await incrementCouponUsage(appliedCoupon._id.toString());
     }
 
-    // 6. Clear cart in Redis upon checkout session creation
     await clearCart(userId);
 
     return {
@@ -282,7 +268,7 @@ export const createCheckoutSession = async (
       keyId: gatewayOrder.keyId,
     };
   } catch (error) {
-    // If order creation failed, rollback inventory
+
     for (const resItem of reservedItems) {
       await Product.updateOne(
         { _id: resItem.productId },
@@ -293,9 +279,6 @@ export const createCheckoutSession = async (
   }
 };
 
-/**
- * Returns paginated customer order history.
- */
 export const getCustomerOrders = async (
   userId: string,
   page = 1,
@@ -342,9 +325,6 @@ export const getCustomerOrders = async (
   };
 };
 
-/**
- * Returns single customer order detail with seller orders.
- */
 export const getCustomerOrderById = async (userId: string, orderId: string) => {
   const order = await Order.findOne({
     _id: orderId,
@@ -365,9 +345,6 @@ export const getCustomerOrderById = async (userId: string, orderId: string) => {
   };
 };
 
-/**
- * Returns seller orders belonging to a specific vendor.
- */
 export const getVendorOrders = async (
   vendorId: string,
   status?: string,
@@ -402,9 +379,6 @@ export const getVendorOrders = async (
   };
 };
 
-/**
- * Updates fulfillment status with strict state machine verification.
- */
 export const updateSellerOrderStatus = async (
   vendorId: string,
   sellerOrderId: string,

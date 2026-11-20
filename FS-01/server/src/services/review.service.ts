@@ -7,9 +7,6 @@ import User from '../models/User';
 import { AppError } from '../middleware/errorHandler';
 import { FulfillmentStatus, PaymentStatus } from '../types';
 
-/**
- * Creates a verified customer review for a delivered product.
- */
 export const createProductReview = async (params: {
   userId: string;
   productId: string;
@@ -23,7 +20,6 @@ export const createProductReview = async (params: {
     throw new AppError('Rating must be an integer between 1 and 5', 400);
   }
 
-  // 1. Check if user already reviewed this product
   const existingReview = await Review.findOne({
     customerId: new mongoose.Types.ObjectId(userId),
     productId: new mongoose.Types.ObjectId(productId),
@@ -33,8 +29,6 @@ export const createProductReview = async (params: {
     throw new AppError('You have already submitted a review for this product', 400);
   }
 
-  // 2. Verify delivered purchase requirement
-  // Find customer's paid orders containing this product where fulfillmentStatus is DELIVERED
   const customerOrders = await Order.find({
     customerId: new mongoose.Types.ObjectId(userId),
     paymentStatus: PaymentStatus.PAID,
@@ -65,7 +59,6 @@ export const createProductReview = async (params: {
   const user = await User.findById(userId);
   const customerName = user ? user.name : 'Verified Customer';
 
-  // 3. Create review record
   const review = await Review.create({
     productId: new mongoose.Types.ObjectId(productId),
     customerId: new mongoose.Types.ObjectId(userId),
@@ -78,7 +71,6 @@ export const createProductReview = async (params: {
     isVerifiedPurchase: true,
   });
 
-  // 4. Update Product ratingSummary aggregation
   const stats = await Review.aggregate([
     { $match: { productId: new mongoose.Types.ObjectId(productId) } },
     {
@@ -105,9 +97,6 @@ export const createProductReview = async (params: {
   return review;
 };
 
-/**
- * Returns paginated reviews for a given product.
- */
 export const getProductReviews = async (
   productId: string,
   page: number = 1,
@@ -131,4 +120,3 @@ export const getProductReviews = async (
     totalPages: Math.ceil(total / limit),
   };
 };
-

@@ -4,9 +4,6 @@ import Order from '../models/Order';
 import SellerOrder from '../models/SellerOrder';
 import { AppError } from '../middleware/errorHandler';
 
-/**
- * Streams an authentic, beautifully-formatted multi-vendor PDF invoice.
- */
 export const generateInvoicePDF = async (orderId: string, res: Response) => {
   const order = await Order.findById(orderId);
   if (!order) {
@@ -19,7 +16,6 @@ export const generateInvoicePDF = async (orderId: string, res: Response) => {
 
   const doc = new PDFDocument({ margin: 40, size: 'A4' });
 
-  // Stream directly to HTTP response
   res.setHeader('Content-Type', 'application/pdf');
   res.setHeader(
     'Content-Disposition',
@@ -28,9 +24,8 @@ export const generateInvoicePDF = async (orderId: string, res: Response) => {
 
   doc.pipe(res);
 
-  // 1. Header
   doc
-    .fillColor('#d97706') // Amber primary
+    .fillColor('#d97706')
     .fontSize(22)
     .font('Helvetica-Bold')
     .text('Market Zone', 40, 40)
@@ -227,4 +222,3 @@ export const generateInvoicePDF = async (orderId: string, res: Response) => {
 
   doc.end();
 };
-

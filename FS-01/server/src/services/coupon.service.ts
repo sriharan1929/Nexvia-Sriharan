@@ -7,9 +7,6 @@ export interface CouponValidationResult {
   finalSubtotalPaise: number;
 }
 
-/**
- * Validates promotional coupon against current cart subtotal and active rules.
- */
 export const validateCoupon = async (
   code: string,
   subtotalPaise: number
@@ -88,4 +85,3 @@ export const createAdminCoupon = async (data: Partial<ICoupon>) => {
 export const listAdminCoupons = async () => {
   return await Coupon.find().sort({ createdAt: -1 });
 };
-

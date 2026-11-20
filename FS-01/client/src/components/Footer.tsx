@@ -6,7 +6,7 @@ export default function Footer() {
     <footer className="bg-[#FAFBFC] border-t border-[#E9E9ED] text-[#282C3F] pt-12 pb-8 mt-16 text-xs">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pb-10 border-b border-[#E9E9ED]">
-          {/* Column 1: Online Shopping */}
+
           <div>
             <h4 className="font-bold text-xs uppercase tracking-wider text-[#282C3F] mb-4">
               Online Shopping
@@ -50,7 +50,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Column 2: Customer Policies */}
           <div>
             <h4 className="font-bold text-xs uppercase tracking-wider text-[#282C3F] mb-4">
               Customer Policies
@@ -85,7 +84,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Column 3: Experience App & Connect */}
           <div>
             <h4 className="font-bold text-xs uppercase tracking-wider text-[#282C3F] mb-4">
               Experience Mobile Shopping
@@ -112,7 +110,6 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Column 4: Guarantees */}
           <div className="space-y-6">
             <div className="flex items-start space-x-3">
               <ShieldCheck className="w-8 h-8 text-[#282C3F] shrink-0 mt-0.5" />
@@ -136,7 +133,6 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Popular searches footer strip */}
         <div className="py-6 border-b border-[#E9E9ED] text-[#94969F] text-[11px] leading-relaxed">
           <strong className="text-[#535766]">POPULAR SEARCHES: </strong>
           <span>
@@ -145,7 +141,6 @@ export default function Footer() {
           </span>
         </div>
 
-        {/* Bottom Bar */}
         <div className="pt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between text-[#94969F] text-[11px]">
           <p>© 2026 www.marketzone.com. All rights reserved.</p>
           <p className="mt-2 sm:mt-0 font-medium">Market Zone Multi-Vendor Enterprise Edition</p>
@@ -154,4 +149,3 @@ export default function Footer() {
     </footer>
   );
 }
-

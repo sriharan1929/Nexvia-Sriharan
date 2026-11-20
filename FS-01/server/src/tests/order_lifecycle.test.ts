@@ -24,13 +24,13 @@ describe('Address Validation Schema (Zod)', () => {
       line1: 'Flat 402, Lotus Residency',
       city: 'Bengaluru',
       state: 'Karnataka',
-      pincode: '056003', // Starts with 0
+      pincode: '056003',
       phone: '9876543210',
     };
 
     expect(addressSchema.safeParse(invalidPincode).success).toBe(false);
 
-    const shortPincode = { ...invalidPincode, pincode: '56003' }; // 5 digits
+    const shortPincode = { ...invalidPincode, pincode: '56003' };
     expect(addressSchema.safeParse(shortPincode).success).toBe(false);
   });
 
@@ -50,24 +50,20 @@ describe('Address Validation Schema (Zod)', () => {
 
 describe('Multi-Vendor Commission Arithmetic', () => {
   it('should calculate integer paise commission with deterministic rounding', () => {
-    const commissionRate = 0.10; // 10%
+    const commissionRate = 0.10;
 
-    // Vendor A sells item worth ₹1,234.56 = 123456 paise
     const vendorSubtotalPaise = 123456;
     const commissionPaise = Math.round(vendorSubtotalPaise * commissionRate);
     const vendorNetPaise = vendorSubtotalPaise - commissionPaise;
 
-    expect(commissionPaise).toBe(12346); // 12345.6 rounds to 12346 paise
-    expect(vendorNetPaise).toBe(111110); // 123456 - 12346 = 111110 paise
-    expect(commissionPaise + vendorNetPaise).toBe(vendorSubtotalPaise); // Perfect balance
+    expect(commissionPaise).toBe(12346);
+    expect(vendorNetPaise).toBe(111110);
+    expect(commissionPaise + vendorNetPaise).toBe(vendorSubtotalPaise);
   });
 
   it('should accurately partition multi-vendor order shares', () => {
     const commissionRate = 0.10;
 
-    // Multi-vendor checkout:
-    // Vendor 1: Keyboard ₹1,000 (100000 paise)
-    // Vendor 2: Mouse ₹500 (50000 paise)
     const v1Subtotal = 100000;
     const v2Subtotal = 50000;
 
@@ -77,11 +73,11 @@ describe('Multi-Vendor Commission Arithmetic', () => {
     const v2Commission = Math.round(v2Subtotal * commissionRate);
     const v2Net = v2Subtotal - v2Commission;
 
-    expect(v1Commission).toBe(10000); // ₹100
-    expect(v1Net).toBe(90000); // ₹900
+    expect(v1Commission).toBe(10000);
+    expect(v1Net).toBe(90000);
 
-    expect(v2Commission).toBe(5000); // ₹50
-    expect(v2Net).toBe(45000); // ₹450
+    expect(v2Commission).toBe(5000);
+    expect(v2Net).toBe(45000);
 
     const totalCustomerPaid = v1Subtotal + v2Subtotal;
     const totalPlatformEarned = v1Commission + v2Commission;
@@ -123,4 +119,3 @@ describe('Fulfillment State Machine Transitions', () => {
     expect(isTransitionAllowed(FulfillmentStatus.DELIVERED, FulfillmentStatus.PLACED)).toBe(false);
   });
 });
-

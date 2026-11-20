@@ -196,4 +196,3 @@ export const MEGA_MENU_DATA: MegaMenuCategory[] = [
     ],
   },
 ];
-

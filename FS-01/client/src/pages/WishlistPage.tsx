@@ -52,7 +52,7 @@ export default function WishlistPage() {
           </div>
         ) : (
           <div>
-            {/* Wishlist Header */}
+
             <div className="mb-8">
               <h1 className="text-lg font-bold text-[#282C3F] tracking-tight">
                 My Wishlist{' '}
@@ -62,7 +62,6 @@ export default function WishlistPage() {
               </h1>
             </div>
 
-            {/* 4-Column Wishlist Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {items.map((item) => {
                 const discount =
@@ -78,7 +77,7 @@ export default function WishlistPage() {
                     key={item.productId}
                     className="border border-[#E9E9ED] rounded-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow relative bg-white group"
                   >
-                    {/* Remove cross button */}
+
                     <button
                       onClick={() => removeFromWishlist(item.productId)}
                       className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-white/90 shadow-sm border border-[#E9E9ED] flex items-center justify-center text-gray-500 hover:text-[#282C3F] hover:bg-white z-10 transition"
@@ -87,7 +86,6 @@ export default function WishlistPage() {
                       <X className="w-4 h-4" />
                     </button>
 
-                    {/* Image */}
                     <Link
                       to={`/products/${item.slug}`}
                       className="block aspect-[3/4] bg-[#F5F5F6] overflow-hidden"
@@ -155,4 +153,3 @@ export default function WishlistPage() {
     </div>
   );
 }
-

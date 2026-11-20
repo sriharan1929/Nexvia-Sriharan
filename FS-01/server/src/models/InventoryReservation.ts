@@ -55,4 +55,3 @@ export const InventoryReservation: Model<IInventoryReservation> =
     inventoryReservationSchema
   );
 export default InventoryReservation;
-

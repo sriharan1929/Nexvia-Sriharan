@@ -9,10 +9,6 @@ import {
   processPaymentFailure,
 } from '../services/payment.service';
 
-/**
- * Verifies client Razorpay checkout signature and captures payment.
- * POST /api/v1/payments/razorpay/verify
- */
 export const verifyPayment = async (
   req: AuthenticatedRequest,
   res: Response,
@@ -39,7 +35,6 @@ export const verifyPayment = async (
       throw new AppError('Forbidden: you do not own this order', 403);
     }
 
-    // Verify signature
     const isValid = verifyClientSignature(
       razorpayOrderId,
       razorpayPaymentId,
@@ -50,7 +45,6 @@ export const verifyPayment = async (
       throw new AppError('Invalid payment signature', 400);
     }
 
-    // Process payment success & vendor Route transfers
     const result = await processPaymentSuccess({
       razorpayOrderId,
       razorpayPaymentId,
@@ -72,10 +66,6 @@ export const verifyPayment = async (
   }
 };
 
-/**
- * Simulates payment success for rapid local development / testing without live Razorpay account.
- * POST /api/v1/payments/simulate
- */
 export const simulatePayment = async (
   req: AuthenticatedRequest,
   res: Response,
@@ -194,4 +184,3 @@ export const handleRazorpayWebhook = async (
     next(error);
   }
 };
-

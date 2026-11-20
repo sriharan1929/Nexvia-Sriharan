@@ -96,7 +96,6 @@ export default function LoginPage() {
             </div>
           </form>
 
-          {/* Quick Demo Credentials Help */}
           <div className="mt-6 pt-6 border-t border-gray-100 text-xs text-gray-500">
             <p className="font-semibold text-gray-700 mb-1">Demo Credentials:</p>
             <p>Admin: <code className="bg-gray-100 px-1 py-0.5 rounded">admin@marketzone.com</code> / <code className="bg-gray-100 px-1 py-0.5 rounded">MarketZone@123</code></p>
@@ -107,4 +106,3 @@ export default function LoginPage() {
     </div>
   );
 }
-

@@ -77,4 +77,3 @@ export const VendorTransfer: Model<IVendorTransfer> = mongoose.model<IVendorTran
   'VendorTransfer',
   vendorTransferSchema
 );
-

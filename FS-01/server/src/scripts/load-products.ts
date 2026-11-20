@@ -1,18 +1,3 @@
-/**
- * load-products.ts
- * ─────────────────────────────────────────────────────────────────────────────
- * Automatically loads 200+ rich products (Indian Fashion, Electronics, Home,
- * Beauty) directly into MongoDB Atlas without needing manual CSV downloads.
- *
- * Combines:
- * 1. 50+ Myntra-style fashion flagship items (Roadster, HRX, Wrogn, ONLY, Levis, etc.)
- *    with 3:4 aspect ratio fashion photos.
- * 2. 194 catalog items fetched live from DummyJSON, converted to INR paise.
- *
- * RUN:
- *   npm --prefix server run load:products
- * ─────────────────────────────────────────────────────────────────────────────
- */
 
 import mongoose from 'mongoose';
 import slugify from 'slugify';
@@ -22,9 +7,8 @@ import Category from '../models/Category';
 import VendorProfile from '../models/VendorProfile';
 import { ProductStatus, ApprovalStatus } from '../types';
 
-// Curated Myntra-style flagship fashion items with high-res 3:4 imagery
 const CURATED_FASHION_ITEMS = [
-  // ─── MEN: T-SHIRTS ───
+
   {
     title: 'Roadster Pure Cotton Solid Casual Round Neck T-shirt',
     brand: 'Roadster',
@@ -70,7 +54,7 @@ const CURATED_FASHION_ITEMS = [
     rating: 4.5,
     ratingCount: 5410,
   },
-  // ─── MEN: SHIRTS & JEANS ───
+
   {
     title: 'H&M Regular Fit Checked Cotton Casual Shirt',
     brand: 'H&M',
@@ -101,7 +85,7 @@ const CURATED_FASHION_ITEMS = [
     rating: 4.6,
     ratingCount: 7890,
   },
-  // ─── WOMEN: DRESSES & TOPS ───
+
   {
     title: 'ONLY Women Floral Printed Wrap Midi Dress',
     brand: 'ONLY',
@@ -147,7 +131,7 @@ const CURATED_FASHION_ITEMS = [
     rating: 4.3,
     ratingCount: 890,
   },
-  // ─── WOMEN: ETHNIC WEAR ───
+
   {
     title: 'Biba Women Mustard Yellow Floral Anarkali Kurta Set',
     brand: 'Biba',
@@ -178,7 +162,7 @@ const CURATED_FASHION_ITEMS = [
     rating: 4.6,
     ratingCount: 3120,
   },
-  // ─── FOOTWEAR ───
+
   {
     title: 'Puma Men Smashic Clean Casual Lifestyle Sneakers',
     brand: 'Puma',
@@ -194,7 +178,7 @@ const CURATED_FASHION_ITEMS = [
     rating: 4.4,
     ratingCount: 6150,
   },
-  // ─── ELECTRONICS & TECH ───
+
   {
     title: 'boAt Airdopes 141 ANC Bluetooth Truly Wireless Earbuds',
     brand: 'boAt',
@@ -225,7 +209,7 @@ const CURATED_FASHION_ITEMS = [
     rating: 4.2,
     ratingCount: 9800,
   },
-  // ─── BEAUTY & SKINCARE ───
+
   {
     title: 'The Derma Co 10% Vitamin C Radiance Face Serum (30ml)',
     brand: 'The Derma Co',
@@ -243,7 +227,6 @@ const CURATED_FASHION_ITEMS = [
   },
 ];
 
-// Map DummyJSON category strings to our Market Zone category slugs
 const DUMMY_CATEGORY_MAP: Record<string, string> = {
   'beauty': 'beauty-skincare',
   'fragrances': 'beauty-fragrances',
@@ -277,7 +260,7 @@ async function ensureCategories(): Promise<Map<string, mongoose.Types.ObjectId>>
     { name: 'Home & Living', slug: 'home-living', parentId: null },
     { name: 'Beauty', slug: 'beauty', parentId: null },
     { name: 'Sports', slug: 'sports', parentId: null },
-    // Children
+
     { name: 'Men T-Shirts', slug: 'men-tshirts', parentSlug: 'men' },
     { name: 'Men Shirts', slug: 'men-shirts', parentSlug: 'men' },
     { name: 'Men Jeans', slug: 'men-jeans', parentSlug: 'men' },
@@ -317,7 +300,6 @@ async function loadProducts() {
   console.log('[CONNECT] Connecting to MongoDB Atlas database...');
   await connectDB();
 
-  // 1. Ensure Categories & Vendors
   console.log('[CATEGORIES] Verifying categories in DB...');
   const categoryMap = await ensureCategories();
 
@@ -329,14 +311,12 @@ async function loadProducts() {
   }
   const vendorIds = vendors.map((v) => v._id as mongoose.Types.ObjectId);
 
-  // 2. Clear existing products to ensure clean catalog
   console.log('[CLEAN] Clearing previous products...');
   await Product.deleteMany({});
 
   const productsToInsert: any[] = [];
   let count = 0;
 
-  // 3. Add Curated Indian Fashion Items
   console.log('[FASHION] Preparing curated Indian fashion flagship collection...');
   for (const item of CURATED_FASHION_ITEMS) {
     const vendorId = vendorIds[count % vendorIds.length];
@@ -439,4 +419,3 @@ loadProducts().catch((err) => {
   console.error('[ERROR] Failed to load products:', err);
   process.exit(1);
 });
-
